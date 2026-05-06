@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Reputio",
+  title: "OwnerReply",
   description: "AI-powered responses to every Google review",
 };
 

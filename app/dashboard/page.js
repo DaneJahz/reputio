@@ -118,7 +118,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white border-b border-gray-100 px-8 py-4 flex items-center justify-between">
-        <span className="text-xl font-bold text-gray-900">Reputio</span>
+        <span className="text-xl font-bold text-gray-900">OwnerReply</span>
         <div className="flex items-center gap-4">
           {isTrialing && (
             <span className="text-sm text-amber-600 font-medium">{trialDaysLeft} days left in trial</span>

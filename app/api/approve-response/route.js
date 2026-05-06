@@ -25,7 +25,7 @@ export async function GET(request) {
             <div style="font-size: 48px; margin-bottom: 16px;">✓</div>
             <h2 style="color: #111;">Response approved!</h2>
             <p style="color: #666;">Your response has been approved and will be posted to Google shortly.</p>
-            <a href="https://getreputio.app/dashboard" style="display: inline-block; margin-top: 24px; background: #111; color: white; padding: 12px 24px; border-radius: 24px; text-decoration: none; font-size: 14px;">
+            <a href="https://getownerreply.com/dashboard" style="display: inline-block; margin-top: 24px; background: #111; color: white; padding: 12px 24px; border-radius: 24px; text-decoration: none; font-size: 14px;">
               Back to Dashboard
             </a>
           </body>
