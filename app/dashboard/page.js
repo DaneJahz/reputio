@@ -106,13 +106,23 @@ export default function Dashboard() {
     setSubscribing(false);
   }
 
+  async function handleManageSubscription() {
+    try {
+      const res = await fetch("/api/customer-portal", { method: "POST" });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+    } catch (err) {
+      alert("Error opening billing portal. Please try again.");
+    }
+  }
+
   const trialDaysLeft = business?.trial_ends_at
     ? Math.max(0, Math.ceil((new Date(business.trial_ends_at) - new Date()) / (1000 * 60 * 60 * 24)))
     : 14;
 
   const isTrialing = business?.subscription_status === "trial";
+  const isActive = business?.subscription_status === "active";
   const googleConnected = !!business?.google_access_token;
-
   const starRatingMap = { ONE: 1, TWO: 2, THREE: 3, FOUR: 4, FIVE: 5 };
 
   return (
@@ -123,9 +133,15 @@ export default function Dashboard() {
           {isTrialing && (
             <span className="text-sm text-amber-600 font-medium">{trialDaysLeft} days left in trial</span>
           )}
-          <button onClick={handleSubscribe} disabled={subscribing} className="bg-black text-white px-4 py-2 rounded-full text-sm hover:bg-gray-800 disabled:opacity-50">
-            {subscribing ? "Loading..." : "Subscribe $59/mo"}
-          </button>
+          {isActive ? (
+            <button onClick={handleManageSubscription} className="border border-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm hover:bg-gray-50">
+              Manage subscription
+            </button>
+          ) : (
+            <button onClick={handleSubscribe} disabled={subscribing} className="bg-black text-white px-4 py-2 rounded-full text-sm hover:bg-gray-800 disabled:opacity-50">
+              {subscribing ? "Loading..." : "Subscribe $59/mo"}
+            </button>
+          )}
           <UserButton afterSignOutUrl="/" />
         </div>
       </nav>
@@ -158,6 +174,11 @@ export default function Dashboard() {
         {!reviewsLoading && reviews.length === 0 && googleConnected && (
           <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center">
             <p className="text-gray-400 text-sm">No reviews found. If you have reviews on Google they should appear here.</p>
+          </div>
+        )}
+        {!reviewsLoading && !googleConnected && (
+          <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center">
+            <p className="text-gray-400 text-sm">Connect your Google Business Profile above to see your reviews.</p>
           </div>
         )}
         {reviews.map(review => (
