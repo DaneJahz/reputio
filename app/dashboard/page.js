@@ -11,10 +11,9 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(false);
   const [subscribing, setSubscribing] = useState(false);
   const [business, setBusiness] = useState(null);
-  const [setupDone, setSetupDone] = useState(false);
 
   useEffect(() => {
-    if (user && !setupDone) {
+    if (user) {
       registerBusiness();
     }
   }, [user]);
@@ -31,7 +30,6 @@ export default function Dashboard() {
       });
       const data = await res.json();
       setBusiness(data.business);
-      setSetupDone(true);
     } catch (err) {
       console.error("Setup error:", err);
     }

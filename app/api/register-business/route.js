@@ -15,7 +15,7 @@ export async function POST(request) {
     }
 
     const existing = await sql`
-      SELECT id FROM businesses WHERE clerk_user_id = ${userId}
+      SELECT * FROM businesses WHERE clerk_user_id = ${userId}
     `;
 
     if (existing.length > 0) {
