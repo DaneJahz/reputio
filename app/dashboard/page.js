@@ -8,6 +8,7 @@ export default function Dashboard() {
   const [rating, setRating] = useState(5);
   const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(false);
+  const [subscribing, setSubscribing] = useState(false);
 
   async function handleGenerate() {
     setLoading(true);
@@ -28,11 +29,28 @@ export default function Dashboard() {
     setLoading(false);
   }
 
+  async function handleSubscribe() {
+    setSubscribing(true);
+    try {
+      const res = await fetch("/api/create-checkout", { method: "POST" });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+    } catch (err) {
+      alert("Error starting checkout. Please try again.");
+    }
+    setSubscribing(false);
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white border-b border-gray-100 px-8 py-4 flex items-center justify-between">
         <span className="text-xl font-bold text-gray-900">Reputio</span>
-        <UserButton afterSignOutUrl="/" />
+        <div className="flex items-center gap-4">
+          <button onClick={handleSubscribe} disabled={subscribing} className="bg-black text-white px-4 py-2 rounded-full text-sm hover:bg-gray-800 disabled:opacity-50">
+            {subscribing ? "Loading..." : "Subscribe — $59/mo"}
+          </button>
+          <UserButton afterSignOutUrl="/" />
+        </div>
       </nav>
       <main className="max-w-2xl mx-auto px-8 py-12">
         <h1 className="text-2xl font-bold text-gray-900 mb-8">Test AI Response</h1>
