@@ -1,6 +1,11 @@
 import Link from "next/link";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 
-export default function Home() {
+export default async function Home() {
+  const { userId } = await auth();
+  if (userId) redirect("/dashboard");
+
   return (
     <div className="min-h-screen bg-white font-sans flex flex-col">
       <nav className="flex items-center justify-between px-8 py-5 border-b border-gray-100">
@@ -10,7 +15,6 @@ export default function Home() {
           <Link href="/sign-up" className="text-sm bg-black text-white px-4 py-2 rounded-full hover:bg-gray-800">Start free trial</Link>
         </div>
       </nav>
-
       <main className="flex-1">
         <div className="max-w-3xl mx-auto px-8 py-24 text-center">
           <p className="inline-block bg-green-50 text-green-700 text-sm font-medium px-4 py-1 rounded-full mb-6">14-day free trial — no credit card required</p>
@@ -20,7 +24,6 @@ export default function Home() {
             <Link href="/sign-up" className="bg-black text-white px-8 py-3 rounded-full text-sm font-medium hover:bg-gray-800">Start free — 14 days free</Link>
             <Link href="#how-it-works" className="border border-gray-200 text-gray-700 px-8 py-3 rounded-full text-sm font-medium hover:bg-gray-50">See how it works</Link>
           </div>
-
           <div className="grid grid-cols-3 gap-6 mb-24">
             <div className="p-6 border border-gray-100 rounded-2xl text-left">
               <p className="text-2xl font-bold text-gray-900 mb-1">$59/mo</p>
@@ -35,7 +38,6 @@ export default function Home() {
               <p className="text-sm text-gray-500">Approve and post to Google</p>
             </div>
           </div>
-
           <div id="how-it-works" className="mb-24">
             <h2 className="text-3xl font-bold text-gray-900 mb-12">How it works</h2>
             <div className="grid grid-cols-3 gap-8 text-left">
@@ -56,7 +58,6 @@ export default function Home() {
               </div>
             </div>
           </div>
-
           <div className="mb-24">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Built for small businesses</h2>
             <p className="text-gray-500 mb-12 max-w-xl mx-auto">Podium and Birdeye charge $300-400/month for features you'll never use. OwnerReply does one thing exceptionally well — responds to your reviews.</p>
@@ -79,7 +80,6 @@ export default function Home() {
               </div>
             </div>
           </div>
-
           <div className="bg-gray-50 rounded-3xl p-12 mb-24">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Simple, honest pricing</h2>
             <p className="text-gray-500 mb-8">One plan. One price. No contracts.</p>
@@ -98,7 +98,6 @@ export default function Home() {
           </div>
         </div>
       </main>
-
       <footer className="border-t border-gray-100 px-8 py-6 text-center">
         <div className="flex justify-center gap-6 text-sm text-gray-400">
           <Link href="/privacy" className="hover:text-gray-600">Privacy Policy</Link>
