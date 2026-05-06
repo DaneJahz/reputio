@@ -4,13 +4,13 @@ import { useState, useEffect } from "react";
 
 export default function Dashboard() {
   const { user } = useUser();
-  const [reviewText, setReviewText] = useState("");
-  const [reviewerName, setReviewerName] = useState("");
-  const [rating, setRating] = useState(5);
-  const [response, setResponse] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [subscribing, setSubscribing] = useState(false);
   const [business, setBusiness] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [subscribing, setSubscribing] = useState(false);
+  const [responses, setResponses] = useState({});
+  const [loading, setLoading] = useState({});
+  const [posting, setPosting] = useState({});
 
   useEffect(() => {
     if (user) {
@@ -30,28 +30,68 @@ export default function Dashboard() {
       });
       const data = await res.json();
       setBusiness(data.business);
+      if (data.business?.google_access_token) {
+        fetchReviews();
+      }
     } catch (err) {
       console.error("Setup error:", err);
     }
   }
 
-  async function handleGenerate() {
-    setLoading(true);
-    setResponse("");
+  async function fetchReviews() {
+    setReviewsLoading(true);
+    try {
+      const res = await fetch("/api/google/reviews");
+      const data = await res.json();
+      if (data.reviews) setReviews(data.reviews);
+    } catch (err) {
+      console.error("Reviews error:", err);
+    }
+    setReviewsLoading(false);
+  }
+
+  async function handleGenerate(review) {
+    setLoading(prev => ({ ...prev, [review.reviewId]: true }));
     try {
       const res = await fetch("/api/generate-response", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          review: { reviewer_name: reviewerName, rating, review_text: reviewText }
+          review: {
+            reviewer_name: review.reviewer?.displayName || "Customer",
+            rating: ["ONE","TWO","THREE","FOUR","FIVE"].indexOf(review.starRating) + 1,
+            review_text: review.comment || "No comment left",
+          }
         }),
       });
       const data = await res.json();
-      setResponse(data.response);
+      setResponses(prev => ({ ...prev, [review.reviewId]: data.response }));
     } catch (err) {
-      setResponse("Error generating response. Please try again.");
+      console.error("Generate error:", err);
     }
-    setLoading(false);
+    setLoading(prev => ({ ...prev, [review.reviewId]: false }));
+  }
+
+  async function handlePost(review) {
+    setPosting(prev => ({ ...prev, [review.reviewId]: true }));
+    try {
+      const res = await fetch("/api/google/reply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          reviewName: review.name,
+          replyText: responses[review.reviewId],
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert("Response posted to Google!");
+        setResponses(prev => ({ ...prev, [review.reviewId]: "" }));
+      }
+    } catch (err) {
+      console.error("Post error:", err);
+    }
+    setPosting(prev => ({ ...prev, [review.reviewId]: false }));
   }
 
   async function handleSubscribe() {
@@ -73,6 +113,8 @@ export default function Dashboard() {
   const isTrialing = business?.subscription_status === "trial";
   const googleConnected = !!business?.google_access_token;
 
+  const starRatingMap = { ONE: 1, TWO: 2, THREE: 3, FOUR: 4, FIVE: 5 };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white border-b border-gray-100 px-8 py-4 flex items-center justify-between">
@@ -87,21 +129,20 @@ export default function Dashboard() {
           <UserButton afterSignOutUrl="/" />
         </div>
       </nav>
-      <main className="max-w-2xl mx-auto px-8 py-12">
+      <main className="max-w-3xl mx-auto px-8 py-12">
         {!googleConnected && (
           <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6 mb-6 flex items-center justify-between">
             <div>
               <p className="font-medium text-blue-900 text-sm">Connect your Google Business Profile</p>
-              <p className="text-blue-700 text-sm mt-1">Required to automatically pull in and respond to reviews.</p>
+              <p className="text-blue-700 text-sm mt-1">Required to pull in and respond to reviews.</p>
             </div>
-            <a href="/api/google/connect" className="bg-black text-white px-4 py-2 rounded-full text-sm hover:bg-gray-800 whitespace-nowrap">
-              Connect Google
-            </a>
+            <a href="/api/google/connect" className="bg-black text-white px-4 py-2 rounded-full text-sm hover:bg-gray-800 whitespace-nowrap">Connect Google</a>
           </div>
         )}
         {googleConnected && (
-          <div className="bg-green-50 border border-green-200 rounded-2xl p-4 mb-6">
+          <div className="bg-green-50 border border-green-200 rounded-2xl p-4 mb-6 flex items-center justify-between">
             <p className="text-green-800 text-sm font-medium">Google Business Profile connected</p>
+            <button onClick={fetchReviews} className="text-sm text-green-700 hover:text-green-900 underline">Refresh reviews</button>
           </div>
         )}
         {isTrialing && trialDaysLeft <= 3 && (
@@ -109,36 +150,59 @@ export default function Dashboard() {
             <p className="text-amber-800 text-sm font-medium">Your trial ends in {trialDaysLeft} days. Subscribe to keep access.</p>
           </div>
         )}
-        <h1 className="text-2xl font-bold text-gray-900 mb-8">Test AI Response</h1>
-        <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
-          <div className="mb-4">
-            <label className="text-sm text-gray-500 block mb-1">Reviewer name</label>
-            <input value={reviewerName} onChange={e => setReviewerName(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="John Smith" />
-          </div>
-          <div className="mb-4">
-            <label className="text-sm text-gray-500 block mb-1">Rating</label>
-            <select value={rating} onChange={e => setRating(Number(e.target.value))} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm">
-              <option value={5}>5 stars</option>
-              <option value={4}>4 stars</option>
-              <option value={3}>3 stars</option>
-              <option value={2}>2 stars</option>
-              <option value={1}>1 star</option>
-            </select>
-          </div>
-          <div className="mb-4">
-            <label className="text-sm text-gray-500 block mb-1">Review text</label>
-            <textarea value={reviewText} onChange={e => setReviewText(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm h-24" placeholder="Paste a Google review here..." />
-          </div>
-          <button onClick={handleGenerate} disabled={loading || !reviewText} className="w-full bg-black text-white py-2 rounded-full text-sm hover:bg-gray-800 disabled:opacity-50">
-            {loading ? "Generating..." : "Generate AI Response"}
-          </button>
-        </div>
-        {response && (
-          <div className="bg-white rounded-2xl border border-gray-100 p-6">
-            <p className="text-sm text-gray-500 mb-2">AI generated response:</p>
-            <p className="text-gray-900 text-sm leading-relaxed">{response}</p>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">Your Reviews</h1>
+        <p className="text-gray-500 text-sm mb-8">Generate and post AI responses to your Google reviews.</p>
+        {reviewsLoading && (
+          <div className="text-center py-12 text-gray-400 text-sm">Loading reviews...</div>
+        )}
+        {!reviewsLoading && reviews.length === 0 && googleConnected && (
+          <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center">
+            <p className="text-gray-400 text-sm">No reviews found. If you have reviews on Google they should appear here.</p>
           </div>
         )}
+        {reviews.map(review => (
+          <div key={review.reviewId} className="bg-white rounded-2xl border border-gray-100 p-6 mb-4">
+            <div className="flex items-start justify-between mb-3">
+              <div>
+                <p className="font-medium text-gray-900 text-sm">{review.reviewer?.displayName || "Anonymous"}</p>
+                <p className="text-amber-500 text-sm">{"★".repeat(starRatingMap[review.starRating] || 0)}{"☆".repeat(5 - (starRatingMap[review.starRating] || 0))}</p>
+              </div>
+              <p className="text-xs text-gray-400">{new Date(review.createTime).toLocaleDateString()}</p>
+            </div>
+            <p className="text-gray-600 text-sm mb-4">{review.comment || "No comment left."}</p>
+            {review.reviewReply && (
+              <div className="bg-gray-50 rounded-xl p-3 mb-4">
+                <p className="text-xs text-gray-400 mb-1">Your response:</p>
+                <p className="text-gray-600 text-sm">{review.reviewReply.comment}</p>
+              </div>
+            )}
+            {!review.reviewReply && (
+              <>
+                {responses[review.reviewId] && (
+                  <div className="bg-blue-50 rounded-xl p-3 mb-3">
+                    <p className="text-xs text-gray-400 mb-1">AI draft:</p>
+                    <textarea
+                      value={responses[review.reviewId]}
+                      onChange={e => setResponses(prev => ({ ...prev, [review.reviewId]: e.target.value }))}
+                      className="w-full bg-transparent text-gray-700 text-sm resize-none outline-none"
+                      rows={3}
+                    />
+                  </div>
+                )}
+                <div className="flex gap-2">
+                  <button onClick={() => handleGenerate(review)} disabled={loading[review.reviewId]} className="bg-black text-white px-4 py-2 rounded-full text-xs hover:bg-gray-800 disabled:opacity-50">
+                    {loading[review.reviewId] ? "Generating..." : "Generate AI Response"}
+                  </button>
+                  {responses[review.reviewId] && (
+                    <button onClick={() => handlePost(review)} disabled={posting[review.reviewId]} className="border border-gray-200 text-gray-700 px-4 py-2 rounded-full text-xs hover:bg-gray-50 disabled:opacity-50">
+                      {posting[review.reviewId] ? "Posting..." : "Post to Google"}
+                    </button>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        ))}
       </main>
     </div>
   );

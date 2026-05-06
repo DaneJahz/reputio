@@ -1,0 +1,71 @@
+import { auth } from "@clerk/nextjs/server";
+import sql from "@/lib/db";
+
+export async function GET() {
+  try {
+    const { userId } = await auth();
+    if (!userId) {
+      return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const businesses = await sql`
+      SELECT * FROM businesses WHERE clerk_user_id = ${userId}
+    `;
+
+    if (!businesses.length || !businesses[0].google_access_token) {
+      return Response.json({ error: "Google not connected" }, { status: 400 });
+    }
+
+    const business = businesses[0];
+
+    const accountsRes = await fetch(
+      "https://mybusinessaccountmanagement.googleapis.com/v1/accounts",
+      {
+        headers: {
+          Authorization: `Bearer ${business.google_access_token}`,
+        },
+      }
+    );
+
+    const accountsData = await accountsRes.json();
+
+    if (!accountsData.accounts?.length) {
+      return Response.json({ error: "No Google Business accounts found" }, { status: 404 });
+    }
+
+    const accountId = accountsData.accounts[0].name;
+
+    const locationsRes = await fetch(
+      `https://mybusinessbusinessinformation.googleapis.com/v1/${accountId}/locations`,
+      {
+        headers: {
+          Authorization: `Bearer ${business.google_access_token}`,
+        },
+      }
+    );
+
+    const locationsData = await locationsRes.json();
+
+    if (!locationsData.locations?.length) {
+      return Response.json({ error: "No locations found" }, { status: 404 });
+    }
+
+    const locationId = locationsData.locations[0].name;
+
+    const reviewsRes = await fetch(
+      `https://mybusiness.googleapis.com/v4/${locationId}/reviews`,
+      {
+        headers: {
+          Authorization: `Bearer ${business.google_access_token}`,
+        },
+      }
+    );
+
+    const reviewsData = await reviewsRes.json();
+
+    return Response.json({ reviews: reviewsData.reviews || [], locationId });
+  } catch (error) {
+    console.error("Reviews fetch error:", error);
+    return Response.json({ error: "Failed to fetch reviews" }, { status: 500 });
+  }
+}
