@@ -73,6 +73,7 @@ export default function Dashboard() {
     : 14;
 
   const isTrialing = business?.subscription_status === "trial";
+  const googleConnected = !!business?.google_access_token;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -89,6 +90,22 @@ export default function Dashboard() {
         </div>
       </nav>
       <main className="max-w-2xl mx-auto px-8 py-12">
+        {!googleConnected && (
+          <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6 mb-6 flex items-center justify-between">
+            <div>
+              <p className="font-medium text-blue-900 text-sm">Connect your Google Business Profile</p>
+              <p className="text-blue-700 text-sm mt-1">Required to automatically pull in and respond to reviews.</p>
+            </div>
+            <a href="/api/google/connect" className="bg-black text-white px-4 py-2 rounded-full text-sm hover:bg-gray-800 whitespace-nowrap">
+              Connect Google
+            </a>
+          </div>
+        )}
+        {googleConnected && (
+          <div className="bg-green-50 border border-green-200 rounded-2xl p-4 mb-6">
+            <p className="text-green-800 text-sm font-medium">Google Business Profile connected</p>
+          </div>
+        )}
         {isTrialing && trialDaysLeft <= 3 && (
           <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-6">
             <p className="text-amber-800 text-sm font-medium">Your trial ends in {trialDaysLeft} days. Subscribe to keep access.</p>
