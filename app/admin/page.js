@@ -2,11 +2,11 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import sql from "@/lib/db";
 
-const ADMIN_USER_ID = "user_3DKbOigJg6hV9m1JvFNvNaBxxq3";
+const ADMIN_USER_ID = "user_3DN04mExtQRhazlDsqU3nzFMWoo";
 
 export default async function AdminPage() {
   const { userId } = await auth();
-  if (!userId || userId !== ADMIN_USER_ID) {
+  if (!userId || !ADMIN_USER_IDS.includes(userId)) {
     redirect("/dashboard");
   }
 
