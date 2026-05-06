@@ -1,14 +1,41 @@
 "use client";
-import { UserButton } from "@clerk/nextjs";
-import { useState } from "react";
+import { UserButton, useUser } from "@clerk/nextjs";
+import { useState, useEffect } from "react";
 
 export default function Dashboard() {
+  const { user } = useUser();
   const [reviewText, setReviewText] = useState("");
   const [reviewerName, setReviewerName] = useState("");
   const [rating, setRating] = useState(5);
   const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(false);
   const [subscribing, setSubscribing] = useState(false);
+  const [business, setBusiness] = useState(null);
+  const [setupDone, setSetupDone] = useState(false);
+
+  useEffect(() => {
+    if (user && !setupDone) {
+      registerBusiness();
+    }
+  }, [user]);
+
+  async function registerBusiness() {
+    try {
+      const res = await fetch("/api/register-business", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: user.fullName || user.primaryEmailAddress?.emailAddress,
+          email: user.primaryEmailAddress?.emailAddress,
+        }),
+      });
+      const data = await res.json();
+      setBusiness(data.business);
+      setSetupDone(true);
+    } catch (err) {
+      console.error("Setup error:", err);
+    }
+  }
 
   async function handleGenerate() {
     setLoading(true);
@@ -41,18 +68,32 @@ export default function Dashboard() {
     setSubscribing(false);
   }
 
+  const trialDaysLeft = business?.trial_ends_at
+    ? Math.max(0, Math.ceil((new Date(business.trial_ends_at) - new Date()) / (1000 * 60 * 60 * 24)))
+    : 14;
+
+  const isTrialing = business?.subscription_status === "trial";
+
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white border-b border-gray-100 px-8 py-4 flex items-center justify-between">
         <span className="text-xl font-bold text-gray-900">Reputio</span>
         <div className="flex items-center gap-4">
+          {isTrialing && (
+            <span className="text-sm text-amber-600 font-medium">{trialDaysLeft} days left in trial</span>
+          )}
           <button onClick={handleSubscribe} disabled={subscribing} className="bg-black text-white px-4 py-2 rounded-full text-sm hover:bg-gray-800 disabled:opacity-50">
-            {subscribing ? "Loading..." : "Subscribe — $59/mo"}
+            {subscribing ? "Loading..." : "Subscribe $59/mo"}
           </button>
           <UserButton afterSignOutUrl="/" />
         </div>
       </nav>
       <main className="max-w-2xl mx-auto px-8 py-12">
+        {isTrialing && trialDaysLeft <= 3 && (
+          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-6">
+            <p className="text-amber-800 text-sm font-medium">Your trial ends in {trialDaysLeft} days. Subscribe to keep access.</p>
+          </div>
+        )}
         <h1 className="text-2xl font-bold text-gray-900 mb-8">Test AI Response</h1>
         <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
           <div className="mb-4">
