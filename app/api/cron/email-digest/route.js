@@ -1,5 +1,7 @@
 import sql from "@/lib/db";
-import { sendWeeklyDigest } from "@/lib/email";
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function GET(request) {
   const authHeader = request.headers.get("authorization");
@@ -15,6 +17,7 @@ export async function GET(request) {
     `;
 
     console.log(`Found ${businesses.length} businesses`);
+    console.log(`RESEND_API_KEY starts with: ${process.env.RESEND_API_KEY?.substring(0, 8)}`);
 
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
@@ -23,44 +26,19 @@ export async function GET(request) {
 
     for (const business of businesses) {
       try {
-        console.log(`Processing business: ${business.email}`);
+        console.log(`Sending to: ${business.email}`);
 
-        const newReviews = await sql`
-          SELECT * FROM reviews
-          WHERE business_id = ${business.id}
-            AND review_date >= ${oneWeekAgo.toISOString()}
-          ORDER BY review_date DESC
-        `;
-
-        const unanswered = await sql`
-          SELECT COUNT(*) as count FROM reviews r
-          LEFT JOIN response_drafts rd ON rd.review_id = r.id AND rd.posted_at IS NOT NULL
-          WHERE r.business_id = ${business.id}
-            AND rd.id IS NULL
-        `;
-
-        const allReviews = await sql`
-          SELECT rating FROM reviews WHERE business_id = ${business.id}
-        `;
-
-        const avgRating = allReviews.length > 0
-          ? allReviews.reduce((sum, r) => sum + (r.rating || 0), 0) / allReviews.length
-          : 0;
-
-        console.log(`Sending digest to ${business.email} with ${newReviews.length} new reviews`);
-
-        await sendWeeklyDigest({
-          businessEmail: business.email,
-          businessName: business.business_name || business.name,
-          newReviews,
-          unansweredCount: Number(unanswered[0]?.count || 0),
-          averageRating: avgRating,
+        const result = await resend.emails.send({
+          from: "OwnerReply <noreply@getownerreply.com>",
+          to: business.email,
+          subject: "Weekly digest test",
+          html: "<p>Test email from OwnerReply digest</p>",
         });
 
-        console.log(`Successfully sent to ${business.email}`);
+        console.log(`Resend result:`, JSON.stringify(result));
         sent++;
       } catch (err) {
-        console.error(`Digest error for business ${business.id}:`, err);
+        console.error(`Error for ${business.email}:`, err.message);
       }
     }
 
