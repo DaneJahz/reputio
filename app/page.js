@@ -24,7 +24,7 @@ export default async function Home() {
             <Link href="/sign-up" className="bg-black text-white px-8 py-3 rounded-full text-sm font-medium hover:bg-gray-800">Start free — 14 days free</Link>
             <Link href="#how-it-works" className="border border-gray-200 text-gray-700 px-8 py-3 rounded-full text-sm font-medium hover:bg-gray-50">See how it works</Link>
           </div>
-          <div className="grid grid-cols-3 gap-6 mb-24">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-24">
             <div className="p-6 border border-gray-100 rounded-2xl text-left">
               <p className="text-2xl font-bold text-gray-900 mb-1">$59/mo</p>
               <p className="text-sm text-gray-500">vs $399/mo for Podium</p>
@@ -61,7 +61,7 @@ export default async function Home() {
           <div className="mb-24">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Built for small businesses</h2>
             <p className="text-gray-500 mb-12 max-w-xl mx-auto">Podium and Birdeye charge $300-400/month for features you'll never use. OwnerReply does one thing exceptionally well — responds to your reviews.</p>
-            <div className="grid grid-cols-2 gap-6 text-left">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
               <div className="p-6 border border-gray-100 rounded-2xl">
                 <p className="font-semibold text-gray-900 mb-2">Restaurants</p>
                 <p className="text-sm text-gray-500">Turn negative reviews into recovered customers. Show potential diners you care.</p>
