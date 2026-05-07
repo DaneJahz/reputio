@@ -129,8 +129,9 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white border-b border-gray-100 px-4 md:px-8 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-6">
           <span className="text-xl font-bold text-gray-900">OwnerReply</span>
+          <a href="/history" className="hidden md:block text-sm text-gray-500 hover:text-gray-900">History</a>
           <a href="/settings" className="hidden md:block text-sm text-gray-500 hover:text-gray-900">Settings</a>
         </div>
         <div className="flex items-center gap-2 md:gap-4">
