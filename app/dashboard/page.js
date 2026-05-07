@@ -56,12 +56,13 @@ export default function Dashboard() {
       const res = await fetch("/api/generate-response", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+       body: JSON.stringify({
           review: {
             reviewer_name: review.reviewer?.displayName || "Customer",
             rating: ["ONE","TWO","THREE","FOUR","FIVE"].indexOf(review.starRating) + 1,
             review_text: review.comment || "No comment left",
-          }
+          },
+          tone: business?.tone || "professional",
         }),
       });
       const data = await res.json();
@@ -128,7 +129,10 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white border-b border-gray-100 px-8 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-6">
         <span className="text-xl font-bold text-gray-900">OwnerReply</span>
+        <a href="/settings" className="text-sm text-gray-500 hover:text-gray-900">Settings</a>
+    </div>
         <div className="flex items-center gap-4">
           {isTrialing && (
             <span className="text-sm text-amber-600 font-medium">{trialDaysLeft} days left in trial</span>

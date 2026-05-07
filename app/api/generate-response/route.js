@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { generateReviewResponse } from "@/lib/ai";
+import sql from "@/lib/db";
 
 export async function POST(request) {
   try {
@@ -8,13 +9,19 @@ export async function POST(request) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { review } = await request.json();
+    const { review, tone } = await request.json();
 
     if (!review) {
       return Response.json({ error: "Review is required" }, { status: 400 });
     }
 
-    const response = await generateReviewResponse(review);
+    const businesses = await sql`
+      SELECT * FROM businesses WHERE clerk_user_id = ${userId}
+    `;
+
+    const businessName = businesses[0]?.business_name || "";
+
+    const response = await generateReviewResponse(review, businessName, tone || "professional");
 
     return Response.json({ response });
   } catch (error) {
