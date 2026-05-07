@@ -14,6 +14,8 @@ export async function GET(request) {
       AND email IS NOT NULL
     `;
 
+    console.log(`Found ${businesses.length} businesses`);
+
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
@@ -21,6 +23,8 @@ export async function GET(request) {
 
     for (const business of businesses) {
       try {
+        console.log(`Processing business: ${business.email}`);
+
         const newReviews = await sql`
           SELECT * FROM reviews
           WHERE business_id = ${business.id}
@@ -43,6 +47,8 @@ export async function GET(request) {
           ? allReviews.reduce((sum, r) => sum + (r.rating || 0), 0) / allReviews.length
           : 0;
 
+        console.log(`Sending digest to ${business.email} with ${newReviews.length} new reviews`);
+
         await sendWeeklyDigest({
           businessEmail: business.email,
           businessName: business.business_name || business.name,
@@ -51,6 +57,7 @@ export async function GET(request) {
           averageRating: avgRating,
         });
 
+        console.log(`Successfully sent to ${business.email}`);
         sent++;
       } catch (err) {
         console.error(`Digest error for business ${business.id}:`, err);
