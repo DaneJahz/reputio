@@ -165,6 +165,53 @@ export default function Dashboard() {
             <button onClick={fetchReviews} className="text-sm text-green-700 hover:text-green-900 underline">Refresh reviews</button>
           </div>
         )}
+        {!googleConnected || !business?.business_name ? (
+  <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
+    <h2 className="font-semibold text-gray-900 mb-1">Get started with OwnerReply</h2>
+    <p className="text-sm text-gray-500 mb-4">Complete these steps to start responding to reviews.</p>
+    <div className="space-y-3">
+      <div className="flex items-center gap-3">
+        <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+          <span className="text-white text-xs">✓</span>
+        </div>
+        <span className="text-sm text-gray-400 line-through">Create your account</span>
+      </div>
+      <div className="flex items-center gap-3">
+        <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${business?.business_name ? "bg-green-500" : "border-2 border-gray-200"}`}>
+          {business?.business_name && <span className="text-white text-xs">✓</span>}
+        </div>
+        <span className={`text-sm ${business?.business_name ? "text-gray-400 line-through" : "text-gray-900"}`}>
+          Enter your business name
+        </span>
+        {!business?.business_name && (
+          <a href="/settings" className="text-xs text-blue-600 hover:underline ml-auto">Go to Settings →</a>
+        )}
+      </div>
+      <div className="flex items-center gap-3">
+        <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${googleConnected ? "bg-green-500" : "border-2 border-gray-200"}`}>
+          {googleConnected && <span className="text-white text-xs">✓</span>}
+        </div>
+        <span className={`text-sm ${googleConnected ? "text-gray-400 line-through" : "text-gray-900"}`}>
+          Connect your Google Business Profile
+        </span>
+        {!googleConnected && (
+          <a href="/api/google/connect" className="text-xs text-blue-600 hover:underline ml-auto">Connect →</a>
+        )}
+      </div>
+      <div className="flex items-center gap-3">
+        <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${isActive ? "bg-green-500" : "border-2 border-gray-200"}`}>
+          {isActive && <span className="text-white text-xs">✓</span>}
+        </div>
+        <span className={`text-sm ${isActive ? "text-gray-400 line-through" : "text-gray-900"}`}>
+          Subscribe to get full access
+        </span>
+        {!isActive && (
+          <button onClick={handleSubscribe} className="text-xs text-blue-600 hover:underline ml-auto">Subscribe →</button>
+        )}
+      </div>
+    </div>
+  </div>
+) : null}
         {isTrialing && trialDaysLeft <= 3 && (
           <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-6">
             <p className="text-amber-800 text-sm font-medium">Your trial ends in {trialDaysLeft} days. Subscribe to keep access.</p>
