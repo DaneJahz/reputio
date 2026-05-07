@@ -1,3 +1,8 @@
+export const metadata = {
+  title: 'Privacy Policy — OwnerReply',
+  description: 'Read the OwnerReply privacy policy.',
+};
+
 export default function Privacy() {
   return (
     <div className="max-w-3xl mx-auto px-8 py-16 font-sans">

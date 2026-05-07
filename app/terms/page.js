@@ -1,3 +1,8 @@
+export const metadata = {
+  title: 'Terms of Service — OwnerReply',
+  description: 'Read the OwnerReply terms of service.',
+};
+
 export default function Terms() {
   return (
     <div className="max-w-3xl mx-auto px-8 py-16 font-sans">
