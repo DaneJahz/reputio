@@ -41,9 +41,65 @@ export async function POST(request) {
       const userId = subscription.metadata.userId;
 
       if (userId) {
+        // Get the business first
+        const businesses = await sql`
+          SELECT * FROM businesses WHERE clerk_user_id = ${userId}
+        `;
+
+        if (businesses.length) {
+          const business = businesses[0];
+
+          // Delete response drafts first (they reference reviews)
+          await sql`
+            DELETE FROM response_drafts
+            WHERE review_id IN (
+              SELECT id FROM reviews WHERE business_id = ${business.id}
+            )
+          `;
+
+          // Delete reviews
+          await sql`
+            DELETE FROM reviews WHERE business_id = ${business.id}
+          `;
+
+          // Revoke Google token if present
+          if (business.google_access_token) {
+            try {
+              await fetch(
+                `https://oauth2.googleapis.com/revoke?token=${business.google_access_token}`,
+                { method: "POST" }
+              );
+            } catch (err) {
+              console.error("Google token revoke error:", err);
+            }
+          }
+
+          // Clear sensitive data and mark as inactive
+          await sql`
+            UPDATE businesses 
+            SET subscription_status = 'inactive',
+                stripe_subscription_id = NULL,
+                google_access_token = NULL,
+                google_refresh_token = NULL,
+                google_token_expiry = NULL,
+                google_location_id = NULL
+            WHERE clerk_user_id = ${userId}
+          `;
+
+          console.log(`Data cleared for cancelled user: ${userId}`);
+        }
+      }
+    }
+
+    if (event.type === "customer.subscription.updated") {
+      const subscription = event.data.object;
+      const userId = subscription.metadata.userId;
+
+      if (userId) {
+        const status = subscription.status === "active" ? "active" : "inactive";
         await sql`
           UPDATE businesses 
-          SET subscription_status = 'inactive'
+          SET subscription_status = ${status}
           WHERE clerk_user_id = ${userId}
         `;
       }
