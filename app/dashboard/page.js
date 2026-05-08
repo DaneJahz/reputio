@@ -127,7 +127,19 @@ export default function Dashboard() {
   const isActive = business?.subscription_status === "active";
   const googleConnected = !!business?.google_access_token;
   const starRatingMap = { ONE: 1, TWO: 2, THREE: 3, FOUR: 4, FIVE: 5 };
-
+  const totalReviews = reviews.length;
+  const answeredReviews = reviews.filter(r => r.reviewReply).length;
+  const responseRate = totalReviews > 0 ? Math.round((answeredReviews / totalReviews) * 100) : 0;
+  const avgRating = totalReviews > 0
+   ? (reviews.reduce((sum, r) => sum + (starRatingMap[r.starRating] || 0), 0) / totalReviews).toFixed(1)
+   : "—";
+  const ratingBreakdown = [5, 4, 3, 2, 1].map(star => ({
+   star,
+   count: reviews.filter(r => starRatingMap[r.starRating] === star).length,
+   percent: totalReviews > 0
+     ? Math.round((reviews.filter(r => starRatingMap[r.starRating] === star).length / totalReviews) * 100)
+     : 0,
+}));
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white border-b border-gray-100 px-4 md:px-8 py-4 flex items-center justify-between">
