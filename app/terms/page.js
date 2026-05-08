@@ -7,7 +7,7 @@ export default function Terms() {
   return (
     <div className="max-w-3xl mx-auto px-8 py-16 font-sans">
       <h1 className="text-3xl font-bold text-gray-900 mb-2">Terms of Service</h1>
-      <p className="text-gray-500 text-sm mb-10">Last updated: May 6, 2026</p>
+      <p className="text-gray-500 text-sm mb-10">Last updated: May 8, 2026</p>
 
       <section className="mb-8">
         <h2 className="text-xl font-semibold text-gray-900 mb-3">1. Acceptance of Terms</h2>
@@ -25,8 +25,9 @@ export default function Terms() {
       </section>
 
       <section className="mb-8">
-        <h2 className="text-xl font-semibold text-gray-900 mb-3">4. Cancellation</h2>
-        <p className="text-gray-600 leading-relaxed">You may cancel your subscription at any time. Cancellations take effect at the end of the current billing period. No refunds are provided for partial months.</p>
+        <h2 className="text-xl font-semibold text-gray-900 mb-3">4. Cancellation and Data Deletion</h2>
+        <p className="text-gray-600 leading-relaxed">You may cancel your subscription at any time from your dashboard. Cancellations take effect at the end of the current billing period. No refunds are provided for partial months.</p>
+        <p className="text-gray-600 leading-relaxed mt-3">Upon cancellation, OwnerReply will automatically and permanently delete all data associated with your account, including your stored reviews, AI-generated response drafts, and your Google Business Profile connection and access tokens. We do not retain your data after your subscription ends.</p>
       </section>
 
       <section className="mb-8">
@@ -35,17 +36,22 @@ export default function Terms() {
       </section>
 
       <section className="mb-8">
-        <h2 className="text-xl font-semibold text-gray-900 mb-3">6. Limitation of Liability</h2>
+        <h2 className="text-xl font-semibold text-gray-900 mb-3">6. Data Privacy and Security</h2>
+        <p className="text-gray-600 leading-relaxed">We take your privacy seriously. We do not sell your data to third parties. Your Google Business Profile credentials are stored securely and used only to provide the OwnerReply service. All data is permanently deleted upon cancellation. For full details, see our Privacy Policy.</p>
+      </section>
+
+      <section className="mb-8">
+        <h2 className="text-xl font-semibold text-gray-900 mb-3">7. Limitation of Liability</h2>
         <p className="text-gray-600 leading-relaxed">OwnerReply is provided "as is" without warranties of any kind. We are not responsible for any damages resulting from your use of the service, including but not limited to any impact on your Google Business Profile or online reputation.</p>
       </section>
 
       <section className="mb-8">
-        <h2 className="text-xl font-semibold text-gray-900 mb-3">7. Changes to Terms</h2>
+        <h2 className="text-xl font-semibold text-gray-900 mb-3">8. Changes to Terms</h2>
         <p className="text-gray-600 leading-relaxed">We may update these terms at any time. Continued use of the service after changes constitutes acceptance of the new terms.</p>
       </section>
 
       <section className="mb-8">
-        <h2 className="text-xl font-semibold text-gray-900 mb-3">8. Contact</h2>
+        <h2 className="text-xl font-semibold text-gray-900 mb-3">9. Contact</h2>
         <p className="text-gray-600 leading-relaxed">For questions about these terms, contact us at getownerreply@gmail.com.</p>
       </section>
 

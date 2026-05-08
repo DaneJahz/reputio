@@ -7,7 +7,7 @@ export default function Privacy() {
   return (
     <div className="max-w-3xl mx-auto px-8 py-16 font-sans">
       <h1 className="text-3xl font-bold text-gray-900 mb-2">Privacy Policy</h1>
-      <p className="text-gray-500 text-sm mb-10">Last updated: May 6, 2026</p>
+      <p className="text-gray-500 text-sm mb-10">Last updated: May 8, 2026</p>
 
       <section className="mb-8">
         <h2 className="text-xl font-semibold text-gray-900 mb-3">1. Information We Collect</h2>
@@ -16,31 +16,43 @@ export default function Privacy() {
 
       <section className="mb-8">
         <h2 className="text-xl font-semibold text-gray-900 mb-3">2. How We Use Your Information</h2>
-        <p className="text-gray-600 leading-relaxed">We use your information to provide the OwnerReply service — reading your Google reviews, generating AI-powered responses, and posting approved responses to Google on your behalf. We use your email address to send you review approval notifications.</p>
+        <p className="text-gray-600 leading-relaxed">We use your information to provide the OwnerReply service — reading your Google reviews, generating AI-powered responses, and posting approved responses to Google on your behalf. We use your email address to send you review notifications and your weekly review digest.</p>
       </section>
 
       <section className="mb-8">
         <h2 className="text-xl font-semibold text-gray-900 mb-3">3. Data Storage</h2>
-        <p className="text-gray-600 leading-relaxed">Your data is stored securely in our database. We store your business information, review history, and response drafts. We do not sell your data to third parties.</p>
+        <p className="text-gray-600 leading-relaxed">Your data is stored securely in our database. We store your business information, review history, and response drafts only for as long as you are an active subscriber. We do not sell your data to third parties.</p>
       </section>
 
       <section className="mb-8">
-        <h2 className="text-xl font-semibold text-gray-900 mb-3">4. Google API Services</h2>
+        <h2 className="text-xl font-semibold text-gray-900 mb-3">4. Data Deletion on Cancellation</h2>
+        <p className="text-gray-600 leading-relaxed">We believe your data belongs to you. When you cancel your OwnerReply subscription, we automatically and permanently delete all of your data from our systems. This includes:</p>
+        <ul className="list-disc list-inside text-gray-600 leading-relaxed mt-3 space-y-1">
+          <li>All reviews stored in your account</li>
+          <li>All AI-generated response drafts</li>
+          <li>Your Google Business Profile access tokens</li>
+          <li>Your Google Business Profile connection</li>
+        </ul>
+        <p className="text-gray-600 leading-relaxed mt-3">Your Google account is also disconnected and your OAuth token is revoked immediately upon cancellation. We do not retain your data after your subscription ends.</p>
+      </section>
+
+      <section className="mb-8">
+        <h2 className="text-xl font-semibold text-gray-900 mb-3">5. Google API Services</h2>
         <p className="text-gray-600 leading-relaxed">OwnerReply uses Google API Services to access your Google Business Profile reviews and post responses. Our use and transfer of information received from Google APIs adheres to the Google API Services User Data Policy, including the Limited Use requirements.</p>
       </section>
 
       <section className="mb-8">
-        <h2 className="text-xl font-semibold text-gray-900 mb-3">5. Third Party Services</h2>
+        <h2 className="text-xl font-semibold text-gray-900 mb-3">6. Third Party Services</h2>
         <p className="text-gray-600 leading-relaxed">We use Stripe for payment processing, Clerk for authentication, and Anthropic's Claude API for generating review responses. Each of these services has their own privacy policies governing their use of data.</p>
       </section>
 
       <section className="mb-8">
-        <h2 className="text-xl font-semibold text-gray-900 mb-3">6. Data Deletion</h2>
-        <p className="text-gray-600 leading-relaxed">You may request deletion of your account and associated data at any time by emailing us at getownerreply@gmail.com. We will delete your data within 30 days of your request.</p>
+        <h2 className="text-xl font-semibold text-gray-900 mb-3">7. Data Deletion Request</h2>
+        <p className="text-gray-600 leading-relaxed">You may request deletion of your account and associated data at any time by emailing us at getownerreply@gmail.com. We will delete your data within 30 days of your request. Cancelling your subscription also triggers automatic data deletion as described in Section 4.</p>
       </section>
 
       <section className="mb-8">
-        <h2 className="text-xl font-semibold text-gray-900 mb-3">7. Contact</h2>
+        <h2 className="text-xl font-semibold text-gray-900 mb-3">8. Contact</h2>
         <p className="text-gray-600 leading-relaxed">If you have questions about this privacy policy, please contact us at getownerreply@gmail.com.</p>
       </section>
 
