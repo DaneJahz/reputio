@@ -81,21 +81,31 @@ export default async function Home() {
             </div>
           </div>
           <div className="bg-gray-50 rounded-3xl p-8 md:p-12 mb-24">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Simple, honest pricing</h2>
-            <p className="text-gray-500 mb-8">One plan. One price. No contracts.</p>
-            <div className="bg-white rounded-2xl border border-gray-100 p-8 max-w-sm mx-auto">
-              <p className="text-4xl font-bold text-gray-900 mb-1">$59<span className="text-lg font-normal text-gray-500">/mo</span></p>
-              <p className="text-gray-500 text-sm mb-6">per location</p>
-              <ul className="text-sm text-gray-600 space-y-3 mb-8 text-left">
-                <li>✓ Unlimited Google review responses</li>
-                <li>✓ AI-drafted responses via Claude</li>
-                <li>✓ One-click approve and post</li>
-                <li>✓ 14-day free trial</li>
-                <li>✓ Cancel anytime</li>
-              </ul>
-              <Link href="/sign-up" className="block w-full bg-black text-white py-3 rounded-full text-sm font-medium hover:bg-gray-800 text-center">Start free trial</Link>
-            </div>
-          </div>
+  <h2 className="text-3xl font-bold text-gray-900 mb-4">Simple, honest pricing</h2>
+  <p className="text-gray-500 mb-8">One plan. One price. No contracts.</p>
+  <div className="bg-white rounded-2xl border border-gray-100 p-8 max-w-sm mx-auto">
+    <p className="text-4xl font-bold text-gray-900 mb-1">$59<span className="text-lg font-normal text-gray-500">/mo</span></p>
+    <p className="text-gray-500 text-sm mb-6">per location</p>
+    <ul className="text-sm text-gray-600 space-y-3 mb-6 text-left">
+      <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> Unlimited AI-drafted Google review responses</li>
+      <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> One-click approve and post to Google</li>
+      <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> Filter reviews by star rating and status</li>
+      <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> Full response history log</li>
+      <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> Review analytics dashboard</li>
+      <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> Weekly review digest email</li>
+      <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> Instant email alerts for new reviews</li>
+      <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> Hourly review monitoring</li>
+      <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> Choose your AI response tone</li>
+      <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> Your data is deleted when you cancel</li>
+      <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> 14-day free trial — no credit card required</li>
+      <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> Cancel anytime</li>
+    </ul>
+    <div className="border-t border-gray-100 pt-4 mb-6">
+      <p className="text-xs text-gray-400 text-center">🚀 More features coming soon</p>
+    </div>
+    <Link href="/sign-up" className="block w-full bg-black text-white py-3 rounded-full text-sm font-medium hover:bg-gray-800 text-center">Start free trial</Link>
+  </div>
+</div>
           <div className="mb-24 text-left">
             <h2 className="text-3xl font-bold text-gray-900 mb-12 text-center">Frequently asked questions</h2>
             <div className="space-y-4">
