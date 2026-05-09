@@ -27,7 +27,7 @@ export default async function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-24">
             <div className="p-6 border border-gray-100 rounded-2xl text-left">
               <p className="text-2xl font-bold text-gray-900 mb-1">$59/mo</p>
-              <p className="text-sm text-gray-500">vs $399/mo for Podium</p>
+              <p className="text-sm text-gray-500">vs $399/mo for enterprise tools</p>
             </div>
             <div className="p-6 border border-gray-100 rounded-2xl text-left">
               <p className="text-2xl font-bold text-gray-900 mb-1">60 sec</p>
@@ -60,7 +60,7 @@ export default async function Home() {
           </div>
           <div className="mb-24">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Built for small businesses</h2>
-            <p className="text-gray-500 mb-12 max-w-xl mx-auto">Podium and Birdeye charge $300-400/month for features you'll never use. OwnerReply does one thing exceptionally well — responds to your reviews.</p>
+            <p className="text-gray-500 mb-12 max-w-xl mx-auto">Enterprise tools charge $300-400/month for features you'll never use. OwnerReply does one thing exceptionally well — responds to your reviews.</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
               <div className="p-6 border border-gray-100 rounded-2xl">
                 <p className="font-semibold text-gray-900 mb-2">Restaurants</p>
@@ -80,32 +80,62 @@ export default async function Home() {
               </div>
             </div>
           </div>
+          <div className="mb-24">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4 text-center">What to look for in a review response tool</h2>
+            <p className="text-gray-500 mb-12 max-w-xl mx-auto text-center">Before choosing any tool to manage your Google reviews, ask these questions. Your answers will tell you everything you need to know.</p>
+            <div className="space-y-4 text-left">
+              <div className="border border-gray-100 rounded-2xl p-6">
+                <p className="font-semibold text-gray-900 mb-2">Is there a limit on how many reviews I can respond to?</p>
+                <p className="text-sm text-gray-500 leading-relaxed">Some tools cap you at just 5 direct posts to Google per month — after that you're copying and pasting responses manually. If your business gets more than a handful of reviews a month, that cap defeats the purpose. <span className="text-gray-900 font-medium">OwnerReply has no monthly limits. Every review gets a direct one-click post to Google, every time.</span></p>
+              </div>
+              <div className="border border-gray-100 rounded-2xl p-6">
+                <p className="font-semibold text-gray-900 mb-2">What AI is actually writing my responses?</p>
+                <p className="text-sm text-gray-500 leading-relaxed">Not all AI is created equal. Many budget tools use generic AI models that produce templated, robotic responses that sound like they came from a machine — because they did. <span className="text-gray-900 font-medium">OwnerReply is powered by Claude — one of the most advanced AI models available — producing responses that sound genuinely human, personalized, and on-brand for your business.</span></p>
+              </div>
+              <div className="border border-gray-100 rounded-2xl p-6">
+                <p className="font-semibold text-gray-900 mb-2">Is this tool actually built for responding to reviews?</p>
+                <p className="text-sm text-gray-500 leading-relaxed">Many tools are primarily built around generating new reviews through SMS campaigns and QR codes — with review responses as an afterthought. That's a different problem. <span className="text-gray-900 font-medium">OwnerReply is built exclusively for one job: responding to the Google reviews you already have. No SMS campaigns. No QR codes. No features you'll never use. Just exceptional review responses.</span></p>
+              </div>
+              <div className="border border-gray-100 rounded-2xl p-6">
+                <p className="font-semibold text-gray-900 mb-2">Can I actually see and manage my reviews in one place?</p>
+                <p className="text-sm text-gray-500 leading-relaxed">Some tools work entirely through email — you get a notification, respond, and that's it. No visibility into your review history, no analytics, no way to filter by star rating. <span className="text-gray-900 font-medium">OwnerReply gives you a full dashboard with review analytics, response history, and filters by star rating and status — so you always know exactly where your reputation stands.</span></p>
+              </div>
+              <div className="border border-gray-100 rounded-2xl p-6">
+                <p className="font-semibold text-gray-900 mb-2">What happens to my data if I cancel?</p>
+                <p className="text-sm text-gray-500 leading-relaxed">Most tools don't address this at all — your business data, review history, and Google connection simply stay in their system indefinitely. <span className="text-gray-900 font-medium">With OwnerReply, cancelling your subscription triggers automatic and permanent deletion of all your data — reviews, responses, and your Google connection. Your data belongs to you, not us.</span></p>
+              </div>
+              <div className="border border-gray-100 rounded-2xl p-6">
+                <p className="font-semibold text-gray-900 mb-2">Will I know when a new review comes in?</p>
+                <p className="text-sm text-gray-500 leading-relaxed">Some tools check for new reviews infrequently or rely on you to log in and check manually. In a fast-moving business, a review can sit unanswered for days. <span className="text-gray-900 font-medium">OwnerReply checks for new reviews every hour and sends you an instant email alert the moment one arrives — plus a weekly digest summarizing your review activity so you're always in the loop.</span></p>
+              </div>
+            </div>
+          </div>
           <div className="bg-gray-50 rounded-3xl p-8 md:p-12 mb-24">
-  <h2 className="text-3xl font-bold text-gray-900 mb-4">Simple, honest pricing</h2>
-  <p className="text-gray-500 mb-8">One plan. One price. No contracts.</p>
-  <div className="bg-white rounded-2xl border border-gray-100 p-8 max-w-sm mx-auto">
-    <p className="text-4xl font-bold text-gray-900 mb-1">$59<span className="text-lg font-normal text-gray-500">/mo</span></p>
-    <p className="text-gray-500 text-sm mb-6">per location</p>
-    <ul className="text-sm text-gray-600 space-y-3 mb-6 text-left">
-      <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> Unlimited AI-drafted Google review responses</li>
-      <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> One-click approve and post to Google</li>
-      <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> Filter reviews by star rating and status</li>
-      <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> Full response history log</li>
-      <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> Review analytics dashboard</li>
-      <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> Weekly review digest email</li>
-      <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> Instant email alerts for new reviews</li>
-      <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> Hourly review monitoring</li>
-      <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> Choose your AI response tone</li>
-      <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> Your data is deleted when you cancel</li>
-      <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> 14-day free trial — no credit card required</li>
-      <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> Cancel anytime</li>
-    </ul>
-    <div className="border-t border-gray-100 pt-4 mb-6">
-      <p className="text-xs text-gray-400 text-center">🚀 More features coming soon</p>
-    </div>
-    <Link href="/sign-up" className="block w-full bg-black text-white py-3 rounded-full text-sm font-medium hover:bg-gray-800 text-center">Start free trial</Link>
-  </div>
-</div>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Simple, honest pricing</h2>
+            <p className="text-gray-500 mb-8">One plan. One price. No contracts.</p>
+            <div className="bg-white rounded-2xl border border-gray-100 p-8 max-w-sm mx-auto">
+              <p className="text-4xl font-bold text-gray-900 mb-1">$59<span className="text-lg font-normal text-gray-500">/mo</span></p>
+              <p className="text-gray-500 text-sm mb-6">per location</p>
+              <ul className="text-sm text-gray-600 space-y-3 mb-6 text-left">
+                <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> Unlimited AI-drafted Google review responses</li>
+                <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> One-click approve and post to Google</li>
+                <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> Filter reviews by star rating and status</li>
+                <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> Full response history log</li>
+                <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> Review analytics dashboard</li>
+                <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> Weekly review digest email</li>
+                <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> Instant email alerts for new reviews</li>
+                <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> Hourly review monitoring</li>
+                <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> Choose your AI response tone</li>
+                <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> Your data is deleted when you cancel</li>
+                <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> 14-day free trial — no credit card required</li>
+                <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> Cancel anytime</li>
+              </ul>
+              <div className="border-t border-gray-100 pt-4 mb-6">
+                <p className="text-xs text-gray-400 text-center">🚀 More features coming soon</p>
+              </div>
+              <Link href="/sign-up" className="block w-full bg-black text-white py-3 rounded-full text-sm font-medium hover:bg-gray-800 text-center">Start free trial</Link>
+            </div>
+          </div>
           <div className="mb-24 text-left">
             <h2 className="text-3xl font-bold text-gray-900 mb-12 text-center">Frequently asked questions</h2>
             <div className="space-y-4">
