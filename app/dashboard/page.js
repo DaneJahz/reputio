@@ -22,7 +22,7 @@ export default function Dashboard() {
 
   async function registerBusiness() {
     try {
-      const res = await fetch("/api/register-business", {
+      await fetch("/api/register-business", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -30,21 +30,21 @@ export default function Dashboard() {
           email: user.primaryEmailAddress?.emailAddress,
         }),
       });
-      const data = await res.json();
+    } catch (err) {
+      console.error("Register error (non-fatal):", err);
+    }
 
+    try {
       const settingsRes = await fetch("/api/settings");
       const settingsData = await settingsRes.json();
       if (settingsData.business) {
         setBusiness(settingsData.business);
-      } else {
-        setBusiness(data.business);
-      }
-
-      if (settingsData.business?.google_access_token || data.business?.google_access_token) {
-        fetchReviews();
+        if (settingsData.business.google_access_token) {
+          fetchReviews();
+        }
       }
     } catch (err) {
-      console.error("Setup error:", err);
+      console.error("Settings fetch error:", err);
     }
   }
 
