@@ -67,7 +67,8 @@ export default function Settings() {
           <input
             value={businessName}
             onChange={e => setBusinessName(e.target.value)}
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 bg-white"
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+            style={{ color: '#000000', backgroundColor: '#ffffff' }}
             placeholder="Your business name"
           />
         </div>

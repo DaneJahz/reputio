@@ -31,8 +31,16 @@ export default function Dashboard() {
         }),
       });
       const data = await res.json();
-      setBusiness(data.business);
-      if (data.business?.google_access_token) {
+
+      const settingsRes = await fetch("/api/settings");
+      const settingsData = await settingsRes.json();
+      if (settingsData.business) {
+        setBusiness(settingsData.business);
+      } else {
+        setBusiness(data.business);
+      }
+
+      if (settingsData.business?.google_access_token || data.business?.google_access_token) {
         fetchReviews();
       }
     } catch (err) {
@@ -131,15 +139,16 @@ export default function Dashboard() {
   const answeredReviews = reviews.filter(r => r.reviewReply).length;
   const responseRate = totalReviews > 0 ? Math.round((answeredReviews / totalReviews) * 100) : 0;
   const avgRating = totalReviews > 0
-   ? (reviews.reduce((sum, r) => sum + (starRatingMap[r.starRating] || 0), 0) / totalReviews).toFixed(1)
-   : "—";
+    ? (reviews.reduce((sum, r) => sum + (starRatingMap[r.starRating] || 0), 0) / totalReviews).toFixed(1)
+    : "—";
   const ratingBreakdown = [5, 4, 3, 2, 1].map(star => ({
-   star,
-   count: reviews.filter(r => starRatingMap[r.starRating] === star).length,
-   percent: totalReviews > 0
-     ? Math.round((reviews.filter(r => starRatingMap[r.starRating] === star).length / totalReviews) * 100)
-     : 0,
-}));
+    star,
+    count: reviews.filter(r => starRatingMap[r.starRating] === star).length,
+    percent: totalReviews > 0
+      ? Math.round((reviews.filter(r => starRatingMap[r.starRating] === star).length / totalReviews) * 100)
+      : 0,
+  }));
+
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white border-b border-gray-100 px-4 md:px-8 py-4 flex items-center justify-between">
@@ -235,107 +244,138 @@ export default function Dashboard() {
             <p className="text-amber-800 text-sm font-medium">Your trial ends in {trialDaysLeft} days. Subscribe to keep access.</p>
           </div>
         )}
-        <div className="flex items-center justify-between mb-2">
-  <h1 className="text-2xl font-bold text-gray-900">Your Reviews</h1>
-</div>
-<p className="text-gray-500 text-sm mb-4">Generate and post AI responses to your Google reviews.</p>
-
-<div className="flex flex-wrap gap-2 mb-8">
-  <div className="flex gap-1 flex-wrap">
-    {["all", "1", "2", "3", "4", "5"].map(r => (
-      <button
-        key={r}
-        onClick={() => setRatingFilter(r)}
-        className={`px-3 py-1 rounded-full text-xs font-medium border transition-all ${
-          ratingFilter === r
-            ? "bg-black text-white border-black"
-            : "bg-white text-gray-500 border-gray-200 hover:border-gray-400"
-        }`}
-      >
-        {r === "all" ? "All stars" : "★".repeat(Number(r))}
-      </button>
-    ))}
-  </div>
-  <div className="flex gap-1">
-    {["all", "unanswered"].map(s => (
-      <button
-        key={s}
-        onClick={() => setStatusFilter(s)}
-        className={`px-3 py-1 rounded-full text-xs font-medium border transition-all ${
-          statusFilter === s
-            ? "bg-black text-white border-black"
-            : "bg-white text-gray-500 border-gray-200 hover:border-gray-400"
-        }`}
-      >
-        {s === "all" ? "All reviews" : "Unanswered"}
-      </button>
-    ))}
-  </div>
-</div>
-
-{reviewsLoading && (
-  <div className="text-center py-12 text-gray-400 text-sm">Loading reviews...</div>
-)}
-{!reviewsLoading && reviews.length === 0 && googleConnected && (
-  <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center">
-    <p className="text-gray-400 text-sm">No reviews found. If you have reviews on Google they should appear here.</p>
-  </div>
-)}
-{!reviewsLoading && !googleConnected && (
-  <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center">
-    <p className="text-gray-400 text-sm">Connect your Google Business Profile above to see your reviews.</p>
-  </div>
-)}
-{reviews
-  .filter(review => {
-    const rating = ["ONE","TWO","THREE","FOUR","FIVE"].indexOf(review.starRating) + 1;
-    if (ratingFilter !== "all" && rating !== Number(ratingFilter)) return false;
-    if (statusFilter === "unanswered" && review.reviewReply) return false;
-    return true;
-  })
-  .map(review => (
-    <div key={review.reviewId} className="bg-white rounded-2xl border border-gray-100 p-4 md:p-6 mb-4">
-      <div className="flex items-start justify-between mb-3">
-        <div>
-          <p className="font-medium text-gray-900 text-sm">{review.reviewer?.displayName || "Anonymous"}</p>
-          <p className="text-amber-500 text-sm">{"★".repeat(starRatingMap[review.starRating] || 0)}{"☆".repeat(5 - (starRatingMap[review.starRating] || 0))}</p>
-        </div>
-        <p className="text-xs text-gray-400">{new Date(review.createTime).toLocaleDateString()}</p>
-      </div>
-      <p className="text-gray-600 text-sm mb-4">{review.comment || "No comment left."}</p>
-      {review.reviewReply && (
-        <div className="bg-gray-50 rounded-xl p-3 mb-4">
-          <p className="text-xs text-gray-400 mb-1">Your response:</p>
-          <p className="text-gray-600 text-sm">{review.reviewReply.comment}</p>
-        </div>
-      )}
-      {!review.reviewReply && (
-        <>
-          {responses[review.reviewId] && (
-            <div className="bg-blue-50 rounded-xl p-3 mb-3">
-              <p className="text-xs text-gray-400 mb-1">AI draft:</p>
-              <textarea
-                value={responses[review.reviewId]}
-                onChange={e => setResponses(prev => ({ ...prev, [review.reviewId]: e.target.value }))}
-                className="w-full bg-transparent text-gray-700 text-sm resize-none outline-none"
-                rows={3}
-              />
+        {reviews.length > 0 && (
+          <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-8">
+            <h2 className="font-semibold text-gray-900 mb-4">Review Analytics</h2>
+            <div className="grid grid-cols-3 gap-4 mb-6">
+              <div className="text-center">
+                <p className="text-3xl font-bold text-gray-900">{totalReviews}</p>
+                <p className="text-xs text-gray-500 mt-1">Total reviews</p>
+              </div>
+              <div className="text-center">
+                <p className="text-3xl font-bold text-gray-900">{avgRating}</p>
+                <p className="text-xs text-gray-500 mt-1">Average rating</p>
+              </div>
+              <div className="text-center">
+                <p className="text-3xl font-bold text-gray-900">{responseRate}%</p>
+                <p className="text-xs text-gray-500 mt-1">Response rate</p>
+              </div>
             </div>
-          )}
-          <div className="flex gap-2 flex-wrap">
-            <button onClick={() => handleGenerate(review)} disabled={loading[review.reviewId]} className="bg-black text-white px-4 py-2 rounded-full text-xs hover:bg-gray-800 disabled:opacity-50">
-              {loading[review.reviewId] ? "Generating..." : "Generate AI Response"}
-            </button>
-            {responses[review.reviewId] && (
-              <button onClick={() => handlePost(review)} disabled={posting[review.reviewId]} className="border border-gray-200 text-gray-700 px-4 py-2 rounded-full text-xs hover:bg-gray-50 disabled:opacity-50">
-                {posting[review.reviewId] ? "Posting..." : "Post to Google"}
-              </button>
-            )}
+            <div className="space-y-2">
+              {ratingBreakdown.map(({ star, count, percent }) => (
+                <div key={star} className="flex items-center gap-3">
+                  <span className="text-xs text-gray-500 w-6">{star}★</span>
+                  <div className="flex-1 bg-gray-100 rounded-full h-2">
+                    <div
+                      className="bg-amber-400 h-2 rounded-full transition-all"
+                      style={{ width: `${percent}%` }}
+                    />
+                  </div>
+                  <span className="text-xs text-gray-500 w-6 text-right">{count}</span>
+                </div>
+              ))}
+            </div>
           </div>
-        </>
-      )}
-    </div>
-  ))}
+        )}
+        <div className="flex items-center justify-between mb-2">
+          <h1 className="text-2xl font-bold text-gray-900">Your Reviews</h1>
+        </div>
+        <p className="text-gray-500 text-sm mb-4">Generate and post AI responses to your Google reviews.</p>
+        <div className="flex flex-wrap gap-2 mb-8">
+          <div className="flex gap-1 flex-wrap">
+            {["all", "1", "2", "3", "4", "5"].map(r => (
+              <button
+                key={r}
+                onClick={() => setRatingFilter(r)}
+                className={`px-3 py-1 rounded-full text-xs font-medium border transition-all ${
+                  ratingFilter === r
+                    ? "bg-black text-white border-black"
+                    : "bg-white text-gray-500 border-gray-200 hover:border-gray-400"
+                }`}
+              >
+                {r === "all" ? "All stars" : "★".repeat(Number(r))}
+              </button>
+            ))}
+          </div>
+          <div className="flex gap-1">
+            {["all", "unanswered"].map(s => (
+              <button
+                key={s}
+                onClick={() => setStatusFilter(s)}
+                className={`px-3 py-1 rounded-full text-xs font-medium border transition-all ${
+                  statusFilter === s
+                    ? "bg-black text-white border-black"
+                    : "bg-white text-gray-500 border-gray-200 hover:border-gray-400"
+                }`}
+              >
+                {s === "all" ? "All reviews" : "Unanswered"}
+              </button>
+            ))}
+          </div>
+        </div>
+        {reviewsLoading && (
+          <div className="text-center py-12 text-gray-400 text-sm">Loading reviews...</div>
+        )}
+        {!reviewsLoading && reviews.length === 0 && googleConnected && (
+          <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center">
+            <p className="text-gray-400 text-sm">No reviews found. If you have reviews on Google they should appear here.</p>
+          </div>
+        )}
+        {!reviewsLoading && !googleConnected && (
+          <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center">
+            <p className="text-gray-400 text-sm">Connect your Google Business Profile above to see your reviews.</p>
+          </div>
+        )}
+        {reviews
+          .filter(review => {
+            const rating = ["ONE","TWO","THREE","FOUR","FIVE"].indexOf(review.starRating) + 1;
+            if (ratingFilter !== "all" && rating !== Number(ratingFilter)) return false;
+            if (statusFilter === "unanswered" && review.reviewReply) return false;
+            return true;
+          })
+          .map(review => (
+            <div key={review.reviewId} className="bg-white rounded-2xl border border-gray-100 p-4 md:p-6 mb-4">
+              <div className="flex items-start justify-between mb-3">
+                <div>
+                  <p className="font-medium text-gray-900 text-sm">{review.reviewer?.displayName || "Anonymous"}</p>
+                  <p className="text-amber-500 text-sm">{"★".repeat(starRatingMap[review.starRating] || 0)}{"☆".repeat(5 - (starRatingMap[review.starRating] || 0))}</p>
+                </div>
+                <p className="text-xs text-gray-400">{new Date(review.createTime).toLocaleDateString()}</p>
+              </div>
+              <p className="text-gray-600 text-sm mb-4">{review.comment || "No comment left."}</p>
+              {review.reviewReply && (
+                <div className="bg-gray-50 rounded-xl p-3 mb-4">
+                  <p className="text-xs text-gray-400 mb-1">Your response:</p>
+                  <p className="text-gray-600 text-sm">{review.reviewReply.comment}</p>
+                </div>
+              )}
+              {!review.reviewReply && (
+                <>
+                  {responses[review.reviewId] && (
+                    <div className="bg-blue-50 rounded-xl p-3 mb-3">
+                      <p className="text-xs text-gray-400 mb-1">AI draft:</p>
+                      <textarea
+                        value={responses[review.reviewId]}
+                        onChange={e => setResponses(prev => ({ ...prev, [review.reviewId]: e.target.value }))}
+                        className="w-full bg-transparent text-gray-700 text-sm resize-none outline-none"
+                        rows={3}
+                      />
+                    </div>
+                  )}
+                  <div className="flex gap-2 flex-wrap">
+                    <button onClick={() => handleGenerate(review)} disabled={loading[review.reviewId]} className="bg-black text-white px-4 py-2 rounded-full text-xs hover:bg-gray-800 disabled:opacity-50">
+                      {loading[review.reviewId] ? "Generating..." : "Generate AI Response"}
+                    </button>
+                    {responses[review.reviewId] && (
+                      <button onClick={() => handlePost(review)} disabled={posting[review.reviewId]} className="border border-gray-200 text-gray-700 px-4 py-2 rounded-full text-xs hover:bg-gray-50 disabled:opacity-50">
+                        {posting[review.reviewId] ? "Posting..." : "Post to Google"}
+                      </button>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+          ))}
       </main>
     </div>
   );
