@@ -2,9 +2,11 @@
 import { useUser } from "@clerk/nextjs";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Settings() {
   const { user } = useUser();
+  const router = useRouter();
   const [businessName, setBusinessName] = useState("");
   const [tone, setTone] = useState("professional");
   const [saving, setSaving] = useState(false);
@@ -40,7 +42,9 @@ export default function Settings() {
         body: JSON.stringify({ businessName, tone }),
       });
       setSaved(true);
-      setTimeout(() => setSaved(false), 3000);
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 1000);
     } catch (err) {
       console.error("Error saving settings:", err);
     }
@@ -63,7 +67,7 @@ export default function Settings() {
           <input
             value={businessName}
             onChange={e => setBusinessName(e.target.value)}
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 bg-white"
             placeholder="Your business name"
           />
         </div>
@@ -96,7 +100,7 @@ export default function Settings() {
           disabled={saving}
           className="bg-black text-white px-6 py-2 rounded-full text-sm hover:bg-gray-800 disabled:opacity-50"
         >
-          {saving ? "Saving..." : saved ? "Saved!" : "Save settings"}
+          {saving ? "Saving..." : saved ? "Saved! Redirecting..." : "Save settings"}
         </button>
       </main>
     </div>
