@@ -7,7 +7,11 @@ export async function GET(request) {
   const code = searchParams.get("code");
   const userId = searchParams.get("state");
 
+  console.log("Google callback - code:", code ? "present" : "missing");
+  console.log("Google callback - userId from state:", userId);
+
   if (!code || !userId) {
+    console.log("Missing code or userId - redirecting with error");
     return Response.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/dashboard?error=google_auth_failed`);
   }
 
@@ -25,18 +29,23 @@ export async function GET(request) {
     });
 
     const tokens = await tokenResponse.json();
+    console.log("Token response:", JSON.stringify(tokens));
 
     if (!tokens.access_token) {
+      console.log("No access token in response");
       return Response.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/dashboard?error=no_token`);
     }
 
-    await sql`
+    const result = await sql`
       UPDATE businesses
       SET google_access_token = ${tokens.access_token},
           google_refresh_token = ${tokens.refresh_token || null},
           google_token_expiry = ${new Date(Date.now() + tokens.expires_in * 1000).toISOString()}
       WHERE clerk_user_id = ${userId}
+      RETURNING id, clerk_user_id, email
     `;
+
+    console.log("Update result:", JSON.stringify(result));
 
     return Response.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/dashboard?google=connected`);
   } catch (error) {
