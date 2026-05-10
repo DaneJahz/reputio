@@ -21,7 +21,7 @@ export default function Terms() {
 
       <section className="mb-8">
         <h2 className="text-xl font-semibold text-gray-900 mb-3">3. Subscription and Payment</h2>
-        <p className="text-gray-600 leading-relaxed">OwnerReply is offered at $59 per month per location. A 14-day free trial is available with no credit card required. After the trial, a valid payment method is required to continue using the service. Subscriptions automatically renew monthly until cancelled.</p>
+        <p className="text-gray-600 leading-relaxed">OwnerReply is offered at $35 per month per location. A 14-day free trial is available with no credit card required. After the trial, a valid payment method is required to continue using the service. Subscriptions automatically renew monthly until cancelled.</p>
       </section>
 
       <section className="mb-8">

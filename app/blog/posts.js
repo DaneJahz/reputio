@@ -310,7 +310,7 @@ The hard part is the consistency. Responding to every review, quickly, personall
 
 That's the problem OwnerReply was built to solve. Claude AI drafts a personalized response to every review you receive. You approve with one click. It posts to Google. The whole process takes 30 seconds.
 
-For $59 a month, the math is simple. If it wins you back even one customer, it's paid for itself many times over.
+For $35 a month, the math is simple. If it wins you back even one customer, it's paid for itself many times over.
 
 Try it free for 14 days at getownerreply.com. No credit card required.
 
