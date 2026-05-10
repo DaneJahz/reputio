@@ -31,16 +31,17 @@ export default async function BlogPost({ params }) {
         </div>
         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 leading-tight">{post.title}</h1>
         <div className="prose prose-gray max-w-none">
-          {post.content.trim().split("\n\n").map((paragraph, i) => {
-            if (paragraph.startsWith("**") && paragraph.endsWith("**")) {
-              return <h2 key={i} className="text-xl font-bold text-gray-900 mt-8 mb-3">{paragraph.replace(/\*\*/g, "")}</h2>;
-            }
-            if (paragraph.includes("**")) {
-              return <p key={i} className="text-gray-600 leading-relaxed mb-4" dangerouslySetInnerHTML={{ __html: paragraph.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") }} />;
-            }
-            return <p key={i} className="text-gray-600 leading-relaxed mb-4">{paragraph}</p>;
-          })}
-        </div>
+  {post.content.trim().split(/\n\n|\r\n\r\n/).filter(p => p.trim()).map((paragraph, i) => {
+    const trimmed = paragraph.trim();
+    if (trimmed.startsWith("**") && trimmed.endsWith("**")) {
+      return <h2 key={i} className="text-xl font-bold text-gray-900 mt-8 mb-3">{trimmed.replace(/\*\*/g, "")}</h2>;
+    }
+    if (trimmed.includes("**")) {
+      return <p key={i} className="text-gray-600 leading-relaxed mb-4" dangerouslySetInnerHTML={{ __html: trimmed.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") }} />;
+    }
+    return <p key={i} className="text-gray-600 leading-relaxed mb-4">{trimmed}</p>;
+  })}
+</div>
         <div className="mt-12 bg-gray-50 rounded-2xl p-6">
           <h3 className="font-semibold text-gray-900 mb-2">Try OwnerReply free for 14 days</h3>
           <p className="text-sm text-gray-500 mb-4">AI-powered Google review responses. One click to approve and post. No credit card required.</p>
