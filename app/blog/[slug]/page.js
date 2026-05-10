@@ -2,9 +2,7 @@ import Link from "next/link";
 import { posts } from "../posts";
 import { notFound } from "next/navigation";
 
-export function generateStaticParams() {
-  return posts.map(post => ({ slug: post.slug }));
-}
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }) {
   const post = posts.find(p => p.slug === params.slug);
