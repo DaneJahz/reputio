@@ -103,7 +103,7 @@ export default async function Home() {
               </div>
               <div className="border border-gray-100 rounded-2xl p-6">
                 <p className="font-semibold text-gray-900 mb-2">What happens to my data if I cancel?</p>
-                <p className="text-sm text-gray-500 leading-relaxed">Most tools don't address this at all — your business data, review history, and Google connection simply stay in their system indefinitely. <span className="text-gray-900 font-medium">With OwnerReply, cancelling your subscription triggers automatic and permanent deletion of all your data — reviews, responses, and your Google connection. Your data belongs to you, not us.</span></p>
+                <p className="text-sm text-gray-500 leading-relaxed">Most tools don't address this at all — your business data, review history, and Google connection simply stay in their system indefinitely. <span className="text-gray-900 font-medium">With OwnerReply, cancelling your subscription triggers automatic and permanent deletion of all your data from our database — reviews, responses, and your Google connection. Your data belongs to you, not us.</span></p>
               </div>
               <div className="border border-gray-100 rounded-2xl p-6">
                 <p className="font-semibold text-gray-900 mb-2">Will I know when a new review comes in?</p>
