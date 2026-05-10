@@ -11,9 +11,10 @@ export default async function Home() {
       <nav className="flex items-center justify-between px-8 py-5 border-b border-gray-100">
         <span className="text-xl font-bold text-gray-900">OwnerReply</span>
         <div className="flex gap-4 items-center">
-          <Link href="/sign-in" className="text-sm text-gray-600 hover:text-gray-900">Log in</Link>
-          <Link href="/sign-up" className="text-sm bg-black text-white px-4 py-2 rounded-full hover:bg-gray-800">Start free trial</Link>
-        </div>
+  <Link href="/blog" className="text-sm text-gray-600 hover:text-gray-900 hidden md:block">Blog</Link>
+  <Link href="/sign-in" className="text-sm text-gray-600 hover:text-gray-900">Log in</Link>
+  <Link href="/sign-up" className="text-sm bg-black text-white px-4 py-2 rounded-full hover:bg-gray-800">Start free trial</Link>
+</div>
       </nav>
       <main className="flex-1">
         <div className="max-w-3xl mx-auto px-4 md:px-8 py-16 md:py-24 text-center">
@@ -26,7 +27,7 @@ export default async function Home() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-24">
             <div className="p-6 border border-gray-100 rounded-2xl text-left">
-              <p className="text-2xl font-bold text-gray-900 mb-1">$59/mo</p>
+              <p className="text-2xl font-bold text-gray-900 mb-1">35/mo</p>
               <p className="text-sm text-gray-500">vs $399/mo for enterprise tools</p>
             </div>
             <div className="p-6 border border-gray-100 rounded-2xl text-left">
@@ -114,7 +115,7 @@ export default async function Home() {
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Simple, honest pricing</h2>
             <p className="text-gray-500 mb-8">One plan. One price. No contracts.</p>
             <div className="bg-white rounded-2xl border border-gray-100 p-8 max-w-sm mx-auto">
-              <p className="text-4xl font-bold text-gray-900 mb-1">$59<span className="text-lg font-normal text-gray-500">/mo</span></p>
+              <p className="text-4xl font-bold text-gray-900 mb-1">$35<span className="text-lg font-normal text-gray-500">/mo</span></p>
               <p className="text-gray-500 text-sm mb-6">per location</p>
               <ul className="text-sm text-gray-600 space-y-3 mb-6 text-left">
                 <li className="flex items-start gap-2"><span className="text-green-500 font-bold mt-0.5">✓</span> Unlimited AI-drafted Google review responses</li>
@@ -166,7 +167,7 @@ export default async function Home() {
                 },
                 {
                   q: "Does it work for multiple locations?",
-                  a: "Each location requires its own subscription at $59/mo. Multi-location management is on our roadmap."
+                  a: "Each location requires its own subscription at 35/mo. Multi-location management is on our roadmap."
                 },
                 {
                   q: "What if I already replied to some reviews on Google?",
