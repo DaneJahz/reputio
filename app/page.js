@@ -27,7 +27,7 @@ export default async function Home() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-24">
             <div className="p-6 border border-gray-100 rounded-2xl text-left">
-              <p className="text-2xl font-bold text-gray-900 mb-1">35/mo</p>
+              <p className="text-2xl font-bold text-gray-900 mb-1">$35/mo</p>
               <p className="text-sm text-gray-500">vs $399/mo for enterprise tools</p>
             </div>
             <div className="p-6 border border-gray-100 rounded-2xl text-left">
@@ -167,7 +167,7 @@ export default async function Home() {
                 },
                 {
                   q: "Does it work for multiple locations?",
-                  a: "Each location requires its own subscription at 35/mo. Multi-location management is on our roadmap."
+                  a: "Each location requires its own subscription at $35/mo. Multi-location management is on our roadmap."
                 },
                 {
                   q: "What if I already replied to some reviews on Google?",
