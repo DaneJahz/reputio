@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { posts } from "../posts";
 import { notFound } from "next/navigation";
+import { auth } from "@clerk/nextjs/server";
 
 export function generateStaticParams() {
   return posts.map(post => ({ slug: post.slug }));
 }
 
-export function generateMetadata({ params }) {
+export async function generateMetadata({ params }) {
   const post = posts.find(p => p.slug === params.slug);
   if (!post) return {};
   return {
@@ -15,7 +16,8 @@ export function generateMetadata({ params }) {
   };
 }
 
-export default function BlogPost({ params }) {
+export default async function BlogPost({ params }) {
+  const { userId } = await auth();
   const post = posts.find(p => p.slug === params.slug);
   if (!post) notFound();
 
@@ -24,8 +26,14 @@ export default function BlogPost({ params }) {
       <nav className="flex items-center justify-between px-8 py-5 border-b border-gray-100">
         <Link href="/" className="text-xl font-bold text-gray-900">OwnerReply</Link>
         <div className="flex gap-4 items-center">
-          <Link href="/blog" className="text-sm text-gray-600 hover:text-gray-900">Blog</Link>
-          <Link href="/sign-up" className="text-sm bg-black text-white px-4 py-2 rounded-full hover:bg-gray-800">Start free trial</Link>
+          {userId ? (
+            <Link href="/dashboard" className="text-sm text-gray-600 hover:text-gray-900">Back to dashboard</Link>
+          ) : (
+            <>
+              <Link href="/sign-in" className="text-sm text-gray-600 hover:text-gray-900">Log in</Link>
+              <Link href="/sign-up" className="text-sm bg-black text-white px-4 py-2 rounded-full hover:bg-gray-800">Start free trial</Link>
+            </>
+          )}
         </div>
       </nav>
       <main className="flex-1 max-w-2xl mx-auto px-4 md:px-8 py-16 w-full">

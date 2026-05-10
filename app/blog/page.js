@@ -1,19 +1,28 @@
 import Link from "next/link";
 import { posts } from "./posts";
+import { auth } from "@clerk/nextjs/server";
 
 export const metadata = {
   title: "Blog — OwnerReply",
   description: "Tips and insights for small business owners on managing Google reviews and building a stronger online reputation.",
 };
 
-export default function Blog() {
+export default async function Blog() {
+  const { userId } = await auth();
+
   return (
     <div className="min-h-screen bg-white font-sans flex flex-col">
       <nav className="flex items-center justify-between px-8 py-5 border-b border-gray-100">
         <Link href="/" className="text-xl font-bold text-gray-900">OwnerReply</Link>
         <div className="flex gap-4 items-center">
-          <Link href="/sign-in" className="text-sm text-gray-600 hover:text-gray-900">Log in</Link>
-          <Link href="/sign-up" className="text-sm bg-black text-white px-4 py-2 rounded-full hover:bg-gray-800">Start free trial</Link>
+          {userId ? (
+            <Link href="/dashboard" className="text-sm text-gray-600 hover:text-gray-900">Back to dashboard</Link>
+          ) : (
+            <>
+              <Link href="/sign-in" className="text-sm text-gray-600 hover:text-gray-900">Log in</Link>
+              <Link href="/sign-up" className="text-sm bg-black text-white px-4 py-2 rounded-full hover:bg-gray-800">Start free trial</Link>
+            </>
+          )}
         </div>
       </nav>
       <main className="flex-1 max-w-3xl mx-auto px-4 md:px-8 py-16 md:py-24 w-full">
