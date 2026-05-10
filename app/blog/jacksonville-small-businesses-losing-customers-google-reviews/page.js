@@ -1,22 +1,8 @@
 import Link from "next/link";
 import { posts } from "../posts";
-import { notFound } from "next/navigation";
 
-export const dynamic = 'force-dynamic';
-
-export async function generateMetadata({ params }) {
-  const post = posts.find(p => p.slug === params.slug);
-  if (!post) return {};
-  return {
-    title: `${post.title} — OwnerReply Blog`,
-    description: post.description,
-  };
-}
-
-export default function BlogPost({ params }) {
-  const post = posts.find(p => p.slug === params.slug);
-  if (!post) notFound();
-
+export default function Page() {
+  const post = posts.find(p => p.slug === "jacksonville-small-businesses-losing-customers-google-reviews");
   return (
     <div className="min-h-screen bg-white font-sans flex flex-col">
       <nav className="flex items-center justify-between px-8 py-5 border-b border-gray-100">
