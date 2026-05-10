@@ -4,8 +4,13 @@ import { notFound } from "next/navigation";
 
 export const dynamic = 'force-dynamic';
 
-export default async function Page() {
-  const posts = await sql`SELECT * FROM blog_posts WHERE slug = 'google-reviews-local-search-ranking-2026-google-reviews' AND published = true`;
+export default async function BlogPost({ params }) {
+  const posts = await sql`
+    SELECT * FROM blog_posts 
+    WHERE slug = ${params.slug} 
+    AND published = true
+  `;
+  
   if (!posts.length) notFound();
   const post = posts[0];
 
@@ -43,7 +48,8 @@ export default async function Page() {
         </div>
       </main>
       <footer className="border-t border-gray-100 px-8 py-6 text-center mt-12">
-        <div className="flex justify-center gap-6 text-sm text-gray-400">
+        <div className="flex justify-center gap-6 text-sm text-gray-400 flex-wrap">
+          <Link href="/blog" className="hover:text-gray-600">Blog</Link>
           <Link href="/privacy" className="hover:text-gray-600">Privacy Policy</Link>
           <Link href="/terms" className="hover:text-gray-600">Terms of Service</Link>
           <a href="mailto:getownerreply@gmail.com" className="hover:text-gray-600">Contact</a>
