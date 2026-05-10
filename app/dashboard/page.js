@@ -156,6 +156,7 @@ export default function Dashboard() {
           <span className="text-xl font-bold text-gray-900">OwnerReply</span>
           <a href="/history" className="hidden md:block text-sm text-gray-500 hover:text-gray-900">History</a>
           <a href="/settings" className="hidden md:block text-sm text-gray-500 hover:text-gray-900">Settings</a>
+          <a href="/blog" className="hidden md:block text-sm text-gray-500 hover:text-gray-900">Blog</a>
         </div>
         <div className="flex items-center gap-2 md:gap-4">
           {isTrialing && (
