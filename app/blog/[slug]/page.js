@@ -5,9 +5,10 @@ import { notFound } from "next/navigation";
 export const dynamic = 'force-dynamic';
 
 export default async function BlogPost({ params }) {
+  const { slug } = await params;
   const posts = await sql`
     SELECT * FROM blog_posts 
-    WHERE slug = ${params.slug} 
+    WHERE slug = ${slug} 
     AND published = true
   `;
   
