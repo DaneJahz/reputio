@@ -1,8 +1,14 @@
 import Link from "next/link";
-import { posts } from "../posts";
+import sql from "@/lib/db";
+import { notFound } from "next/navigation";
 
-export default function Page() {
-  const post = posts.find(p => p.slug === "cost-of-ignoring-google-reviews");
+export const dynamic = 'force-dynamic';
+
+export default async function Page() {
+  const posts = await sql`SELECT * FROM blog_posts WHERE slug = 'cost-of-ignoring-google-reviews-google-reviews' AND published = true`;
+  if (!posts.length) notFound();
+  const post = posts[0];
+
   return (
     <div className="min-h-screen bg-white font-sans flex flex-col">
       <nav className="flex items-center justify-between px-8 py-5 border-b border-gray-100">
@@ -14,9 +20,7 @@ export default function Page() {
       </nav>
       <main className="flex-1 max-w-2xl mx-auto px-4 md:px-8 py-16 w-full">
         <div className="flex items-center gap-3 mb-4">
-          <span className="text-xs text-gray-400">{post.date}</span>
-          <span className="text-xs text-gray-300">·</span>
-          <span className="text-xs text-gray-400">{post.readTime}</span>
+          <span className="text-xs text-gray-400">{new Date(post.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
           <span className="text-xs text-gray-300">·</span>
           <span className="text-xs text-gray-400">By {post.author}</span>
         </div>
