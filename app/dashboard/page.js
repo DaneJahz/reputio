@@ -518,11 +518,11 @@ async function handleCancelFlowSubmit(acceptDiscount) {
                     <button
                       key={reason}
                       onClick={() => setCancelReason(reason)}
-                      className={`w-full text-left px-4 py-3 rounded-xl text-sm border transition-all ${
-                        cancelReason === reason
-                          ? "border-black bg-gray-50 font-medium"
-                          : "border-gray-200 hover:border-gray-400"
-                      }`}
+                      className={`w-full text-left px-4 py-3 rounded-xl text-sm border transition-all text-gray-900 ${
+                    cancelReason === reason
+                      ? "border-black bg-gray-50 font-medium"
+                      : "border-gray-200 hover:border-gray-400"
+                  }`}
                     >
                       {reason}
                     </button>
