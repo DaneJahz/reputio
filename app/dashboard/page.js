@@ -13,6 +13,10 @@ export default function Dashboard() {
   const [posting, setPosting] = useState({});
   const [ratingFilter, setRatingFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [showCancelFlow, setShowCancelFlow] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
+  const [cancelStep, setCancelStep] = useState(1);
+  const [applyingDiscount, setApplyingDiscount] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -139,14 +143,35 @@ export default function Dashboard() {
   }
 
   async function handleManageSubscription() {
-    try {
-      const res = await fetch("/api/customer-portal", { method: "POST" });
-      const data = await res.json();
-      if (data.url) window.location.href = data.url;
-    } catch (err) {
-      alert("Error opening billing portal. Please try again.");
+  setShowCancelFlow(true);
+}
+
+async function handleCancelFlowSubmit(acceptDiscount) {
+  setApplyingDiscount(true);
+  try {
+    const res = await fetch("/api/cancel-flow", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ reason: cancelReason, acceptDiscount }),
+    });
+    const data = await res.json();
+
+    if (data.discountApplied) {
+      setShowCancelFlow(false);
+      alert("Your discount has been applied! You'll be charged $25/mo for the next 2 months. Thank you for staying! 🎉");
+      return;
     }
+
+    // Proceed to Stripe portal
+    setShowCancelFlow(false);
+    const portalRes = await fetch("/api/customer-portal", { method: "POST" });
+    const portalData = await portalRes.json();
+    if (portalData.url) window.location.href = portalData.url;
+  } catch (err) {
+    console.error("Cancel flow error:", err);
   }
+  setApplyingDiscount(false);
+}
 
   const trialDaysLeft = business?.trial_ends_at
     ? Math.max(0, Math.ceil((new Date(business.trial_ends_at) - new Date()) / (1000 * 60 * 60 * 24)))
@@ -473,6 +498,99 @@ export default function Dashboard() {
             </div>
           ))}
       </main>
+
+      {showCancelFlow && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl">
+            {cancelStep === 1 && (
+              <>
+                <h2 className="text-lg font-bold text-gray-900 mb-2">Before you go...</h2>
+                <p className="text-sm text-gray-500 mb-6">We're sorry to see you leave. Can you tell us why you're cancelling? This helps us improve.</p>
+                <div className="space-y-2 mb-6">
+                  {[
+                    "Too expensive",
+                    "Not enough reviews to justify it",
+                    "Switching to a different tool",
+                    "My business is closed or pausing",
+                    "Missing a feature I need",
+                    "Other",
+                  ].map(reason => (
+                    <button
+                      key={reason}
+                      onClick={() => setCancelReason(reason)}
+                      className={`w-full text-left px-4 py-3 rounded-xl text-sm border transition-all ${
+                        cancelReason === reason
+                          ? "border-black bg-gray-50 font-medium"
+                          : "border-gray-200 hover:border-gray-400"
+                      }`}
+                    >
+                      {reason}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => {
+                      if (!cancelReason) return;
+                      if (cancelReason === "Too expensive" && !business?.discount_offered && business?.stripe_subscription_id) {
+                        setCancelStep(2);
+                      } else {
+                        handleCancelFlowSubmit(false);
+                      }
+                    }}
+                    disabled={!cancelReason}
+                    className="flex-1 bg-black text-white py-2 rounded-full text-sm hover:bg-gray-800 disabled:opacity-50"
+                  >
+                    Continue
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowCancelFlow(false);
+                      setCancelReason("");
+                      setCancelStep(1);
+                    }}
+                    className="flex-1 border border-gray-200 text-gray-600 py-2 rounded-full text-sm hover:bg-gray-50"
+                  >
+                    Never mind
+                  </button>
+                </div>
+              </>
+            )}
+            {cancelStep === 2 && (
+              <>
+                <div className="text-center mb-6">
+                  <p className="text-3xl mb-3">🎁</p>
+                  <h2 className="text-lg font-bold text-gray-900 mb-2">Special offer just for you</h2>
+                  <p className="text-sm text-gray-500 mb-4">We hear you — price matters. Stay with OwnerReply at a reduced rate:</p>
+                  <div className="bg-green-50 border border-green-200 rounded-2xl p-4 mb-4">
+                    <p className="text-3xl font-bold text-green-700">$25<span className="text-lg font-normal">/mo</span></p>
+                    <p className="text-sm text-green-600">for the next 2 months</p>
+                    <p className="text-xs text-green-500 mt-1">Save $20 total — then back to $35/mo</p>
+                  </div>
+                  <p className="text-xs text-gray-400">This offer is available once and won't appear again.</p>
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => handleCancelFlowSubmit(true)}
+                    disabled={applyingDiscount}
+                    className="flex-1 bg-black text-white py-2 rounded-full text-sm hover:bg-gray-800 disabled:opacity-50"
+                  >
+                    {applyingDiscount ? "Applying..." : "Accept offer 🎉"}
+                  </button>
+                  <button
+                    onClick={() => handleCancelFlowSubmit(false)}
+                    disabled={applyingDiscount}
+                    className="flex-1 border border-gray-200 text-gray-600 py-2 rounded-full text-sm hover:bg-gray-50 disabled:opacity-50"
+                  >
+                    No thanks, cancel
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
       <footer className="border-t border-gray-100 px-8 py-6 text-center mt-8">
         <div className="flex justify-center gap-6 text-sm text-gray-400 flex-wrap">
           <a href="/blog" className="hover:text-gray-600">Blog</a>
