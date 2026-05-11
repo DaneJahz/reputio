@@ -181,6 +181,13 @@ async function handleCancelFlowSubmit(acceptDiscount) {
   const isActive = business?.subscription_status === "active";
   const googleConnected = !!business?.google_access_token;
   const starRatingMap = { ONE: 1, TWO: 2, THREE: 3, FOUR: 4, FIVE: 5 };
+
+  function getSentiment(starRating) {
+    const rating = starRatingMap[starRating] || 0;
+    if (rating >= 4) return { label: "Positive", color: "bg-green-100 text-green-700" };
+    if (rating === 3) return { label: "Neutral", color: "bg-amber-100 text-amber-700" };
+    return { label: "Negative", color: "bg-red-100 text-red-700" };
+  }
   const totalReviews = reviews.length;
   const answeredReviews = reviews.filter(r => r.reviewReply).length;
   const responseRate = totalReviews > 0 ? Math.round((answeredReviews / totalReviews) * 100) : 0;
@@ -448,13 +455,18 @@ async function handleCancelFlowSubmit(acceptDiscount) {
           })
           .map(review => (
             <div key={review.reviewId} className="bg-white rounded-2xl border border-gray-100 p-4 md:p-6 mb-4">
-              <div className="flex items-start justify-between mb-3">
-                <div>
+            <div className="flex items-start justify-between mb-3">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
                   <p className="font-medium text-gray-900 text-sm">{review.reviewer?.displayName || "Anonymous"}</p>
-                  <p className="text-amber-500 text-sm">{"★".repeat(starRatingMap[review.starRating] || 0)}{"☆".repeat(5 - (starRatingMap[review.starRating] || 0))}</p>
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${getSentiment(review.starRating).color}`}>
+                    {getSentiment(review.starRating).label}
+                  </span>
                 </div>
-                <p className="text-xs text-gray-400">{new Date(review.createTime).toLocaleDateString()}</p>
+                <p className="text-amber-500 text-sm">{"★".repeat(starRatingMap[review.starRating] || 0)}{"☆".repeat(5 - (starRatingMap[review.starRating] || 0))}</p>
               </div>
+              <p className="text-xs text-gray-400">{new Date(review.createTime).toLocaleDateString()}</p>
+            </div>
               <p className="text-gray-600 text-sm mb-4">{review.comment || "No comment left."}</p>
               {review.reviewReply && (
                 <div className="bg-gray-50 rounded-xl p-3 mb-4">
