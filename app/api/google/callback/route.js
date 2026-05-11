@@ -9,9 +9,11 @@ export async function GET(request) {
 
   console.log("Google callback - code:", code ? "present" : "missing");
   console.log("Google callback - userId from state:", userId);
+  console.log("Client ID first 10:", process.env.GOOGLE_CLIENT_ID?.substring(0, 10));
+  console.log("Client Secret first 10:", process.env.GOOGLE_CLIENT_SECRET?.substring(0, 10));
+  console.log("Redirect URI:", `${process.env.NEXT_PUBLIC_APP_URL}/api/google/callback`);
 
   if (!code || !userId) {
-    console.log("Missing code or userId - redirecting with error");
     return Response.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/dashboard?error=google_auth_failed`);
   }
 
@@ -32,7 +34,6 @@ export async function GET(request) {
     console.log("Token response:", JSON.stringify(tokens));
 
     if (!tokens.access_token) {
-      console.log("No access token in response");
       return Response.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/dashboard?error=no_token`);
     }
 
