@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import sql from "@/lib/db";
+import { getValidAccessToken } from "@/lib/google";
 
 export async function GET() {
   try {
@@ -18,12 +19,19 @@ export async function GET() {
 
     const business = businesses[0];
 
+    // Get valid access token (refreshes if expired)
+    let accessToken;
+    try {
+      accessToken = await getValidAccessToken(business);
+    } catch (err) {
+      console.error("Token refresh error:", err);
+      return Response.json({ error: "Google token expired. Please reconnect." }, { status: 401 });
+    }
+
     const accountsRes = await fetch(
       "https://mybusinessaccountmanagement.googleapis.com/v1/accounts",
       {
-        headers: {
-          Authorization: `Bearer ${business.google_access_token}`,
-        },
+        headers: { Authorization: `Bearer ${accessToken}` },
       }
     );
 
@@ -38,9 +46,7 @@ export async function GET() {
     const locationsRes = await fetch(
       `https://mybusinessbusinessinformation.googleapis.com/v1/${accountId}/locations`,
       {
-        headers: {
-          Authorization: `Bearer ${business.google_access_token}`,
-        },
+        headers: { Authorization: `Bearer ${accessToken}` },
       }
     );
 
@@ -52,12 +58,19 @@ export async function GET() {
 
     const locationId = locationsData.locations[0].name;
 
+    // Save location ID to database if not already saved
+    if (!business.google_location_id) {
+      await sql`
+        UPDATE businesses
+        SET google_location_id = ${locationId}
+        WHERE clerk_user_id = ${userId}
+      `;
+    }
+
     const reviewsRes = await fetch(
       `https://mybusiness.googleapis.com/v4/${locationId}/reviews`,
       {
-        headers: {
-          Authorization: `Bearer ${business.google_access_token}`,
-        },
+        headers: { Authorization: `Bearer ${accessToken}` },
       }
     );
 
