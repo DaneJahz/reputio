@@ -19,7 +19,6 @@ export async function GET() {
 
     const business = businesses[0];
 
-    // Get valid access token (refreshes if expired)
     let accessToken;
     try {
       accessToken = await getValidAccessToken(business);
@@ -36,12 +35,14 @@ export async function GET() {
     );
 
     const accountsData = await accountsRes.json();
+    console.log("Accounts response:", JSON.stringify(accountsData));
 
     if (!accountsData.accounts?.length) {
-      return Response.json({ error: "No Google Business accounts found" }, { status: 404 });
+      return Response.json({ error: "No Google Business accounts found", debug: accountsData }, { status: 404 });
     }
 
     const accountId = accountsData.accounts[0].name;
+    console.log("Account ID:", accountId);
 
     const locationsRes = await fetch(
       `https://mybusinessbusinessinformation.googleapis.com/v1/${accountId}/locations`,
@@ -51,14 +52,15 @@ export async function GET() {
     );
 
     const locationsData = await locationsRes.json();
+    console.log("Locations response:", JSON.stringify(locationsData));
 
     if (!locationsData.locations?.length) {
-      return Response.json({ error: "No locations found" }, { status: 404 });
+      return Response.json({ error: "No locations found", debug: locationsData }, { status: 404 });
     }
 
     const locationId = locationsData.locations[0].name;
+    console.log("Location ID:", locationId);
 
-    // Save location ID to database if not already saved
     if (!business.google_location_id) {
       await sql`
         UPDATE businesses
@@ -75,6 +77,7 @@ export async function GET() {
     );
 
     const reviewsData = await reviewsRes.json();
+    console.log("Reviews response:", JSON.stringify(reviewsData));
 
     return Response.json({ reviews: reviewsData.reviews || [], locationId });
   } catch (error) {
