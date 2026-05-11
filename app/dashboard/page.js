@@ -416,6 +416,18 @@ export default function Dashboard() {
             </div>
           ))}
       </main>
+      <footer className="border-t border-gray-100 px-8 py-6 text-center mt-8">
+        <div className="flex justify-center gap-6 text-sm text-gray-400 flex-wrap">
+          <a href="/blog" className="hover:text-gray-600">Blog</a>
+          <a href="/privacy" className="hover:text-gray-600">Privacy Policy</a>
+          <a href="/terms" className="hover:text-gray-600">Terms of Service</a>
+          <a href="mailto:getownerreply@gmail.com" className="hover:text-gray-600">Contact</a>
+          <a href="https://www.facebook.com/profile.php?id=61589344806313" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600">Facebook</a>
+          <a href="https://x.com/GetOwnerReply" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600">X</a>
+          <a href="https://www.instagram.com/ownerreply/" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600">Instagram</a>
+        </div>
+        <p className="text-xs text-gray-300 mt-3">© 2026 OwnerReply. All rights reserved.</p>
+      </footer>
     </div>
   );
 }
