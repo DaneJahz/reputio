@@ -109,6 +109,23 @@ export default function Dashboard() {
     setPosting(prev => ({ ...prev, [review.reviewId]: false }));
   }
 
+  async function handleSaveTemplate(reviewId) {
+      const content = responses[reviewId];
+      if (!content) return;
+      const name = prompt("Name this template (e.g. '5-star thank you', 'Food complaint response'):");
+       if (!name) return;
+        try {
+    await fetch("/api/templates", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, content }),
+    });
+    alert("Template saved! View all templates at /templates");
+  } catch (err) {
+    console.error("Save template error:", err);
+  }
+}
+
   async function handleSubscribe() {
     setSubscribing(true);
     try {
@@ -367,14 +384,22 @@ export default function Dashboard() {
                 <>
                   {responses[review.reviewId] && (
                     <div className="bg-blue-50 rounded-xl p-3 mb-3">
-                      <p className="text-xs text-gray-400 mb-1">AI draft:</p>
-                      <textarea
-                        value={responses[review.reviewId]}
-                        onChange={e => setResponses(prev => ({ ...prev, [review.reviewId]: e.target.value }))}
-                        className="w-full bg-transparent text-gray-700 text-sm resize-none outline-none"
-                        rows={3}
-                      />
-                    </div>
+  <div className="flex items-center justify-between mb-1">
+    <p className="text-xs text-gray-400">AI draft:</p>
+    <button
+      onClick={() => handleSaveTemplate(review.reviewId)}
+      className="text-xs text-gray-500 hover:text-gray-900 border border-gray-200 px-2 py-0.5 rounded-full hover:bg-white"
+    >
+      Save as template
+    </button>
+  </div>
+  <textarea
+    value={responses[review.reviewId]}
+    onChange={e => setResponses(prev => ({ ...prev, [review.reviewId]: e.target.value }))}
+    className="w-full bg-transparent text-gray-700 text-sm resize-none outline-none"
+    rows={3}
+  />
+</div>
                   )}
                   <div className="flex gap-2 flex-wrap">
                     <button onClick={() => handleGenerate(review)} disabled={loading[review.reviewId]} className="bg-black text-white px-4 py-2 rounded-full text-xs hover:bg-gray-800 disabled:opacity-50">
