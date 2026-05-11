@@ -24,13 +24,33 @@ export async function POST(request) {
       return Response.json({ business: existing[0] });
     }
 
+    // Get referral code from header if present
+    const referredBy = request.headers.get('x-referral-code') || null;
+
     // Try to insert, handle duplicate email gracefully
     try {
       const business = await sql`
-        INSERT INTO businesses (name, email, clerk_user_id, subscription_status, trial_ends_at)
-        VALUES (${name}, ${email}, ${userId}, 'trial', NOW() + INTERVAL '14 days')
+        INSERT INTO businesses (name, email, clerk_user_id, subscription_status, trial_ends_at, referral_code, referred_by)
+        VALUES (
+          ${name}, 
+          ${email}, 
+          ${userId}, 
+          'trial', 
+          NOW() + INTERVAL '14 days',
+          UPPER(SUBSTRING(MD5(${userId}), 1, 8)),
+          ${referredBy}
+        )
         RETURNING *
       `;
+
+      // If referred, increment referral count for the referrer
+      if (referredBy) {
+        await sql`
+          UPDATE businesses 
+          SET referral_count = referral_count + 1
+          WHERE referral_code = ${referredBy}
+        `;
+      }
 
       // Send welcome email to new signups
       try {

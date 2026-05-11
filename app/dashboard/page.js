@@ -17,6 +17,9 @@ export default function Dashboard() {
   const [cancelReason, setCancelReason] = useState("");
   const [cancelStep, setCancelStep] = useState(1);
   const [applyingDiscount, setApplyingDiscount] = useState(false);
+  const [referralCode, setReferralCode] = useState("");
+  const [referralCount, setReferralCount] = useState(0);
+  const [referralCopied, setReferralCopied] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -49,6 +52,18 @@ export default function Dashboard() {
       }
     } catch (err) {
       console.error("Settings fetch error:", err);
+    }
+
+    // Fetch referral code
+    try {
+      const referralRes = await fetch("/api/referral");
+      const referralData = await referralRes.json();
+      if (referralData.referralCode) {
+        setReferralCode(referralData.referralCode);
+        setReferralCount(referralData.referralCount);
+      }
+    } catch (err) {
+      console.error("Referral fetch error:", err);
     }
   }
 
@@ -114,21 +129,51 @@ export default function Dashboard() {
   }
 
   async function handleSaveTemplate(reviewId) {
-      const content = responses[reviewId];
-      if (!content) return;
-      const name = prompt("Name this template (e.g. '5-star thank you', 'Food complaint response'):");
-       if (!name) return;
-        try {
-    await fetch("/api/templates", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, content }),
-    });
-    alert("Template saved! View all templates at /templates");
-  } catch (err) {
-    console.error("Save template error:", err);
+    const content = responses[reviewId];
+    if (!content) return;
+    const name = prompt("Name this template (e.g. '5-star thank you', 'Food complaint response'):");
+    if (!name) return;
+    try {
+      await fetch("/api/templates", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, content }),
+      });
+      alert("Template saved! View all templates at /templates");
+    } catch (err) {
+      console.error("Save template error:", err);
+    }
   }
-}
+
+  async function handleManageSubscription() {
+    setShowCancelFlow(true);
+  }
+
+  async function handleCancelFlowSubmit(acceptDiscount) {
+    setApplyingDiscount(true);
+    try {
+      const res = await fetch("/api/cancel-flow", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reason: cancelReason, acceptDiscount }),
+      });
+      const data = await res.json();
+
+      if (data.discountApplied) {
+        setShowCancelFlow(false);
+        alert("Your discount has been applied! You'll be charged $25/mo for the next 2 months. Thank you for staying! 🎉");
+        return;
+      }
+
+      setShowCancelFlow(false);
+      const portalRes = await fetch("/api/customer-portal", { method: "POST" });
+      const portalData = await portalRes.json();
+      if (portalData.url) window.location.href = portalData.url;
+    } catch (err) {
+      console.error("Cancel flow error:", err);
+    }
+    setApplyingDiscount(false);
+  }
 
   async function handleSubscribe() {
     setSubscribing(true);
@@ -141,37 +186,6 @@ export default function Dashboard() {
     }
     setSubscribing(false);
   }
-
-  async function handleManageSubscription() {
-  setShowCancelFlow(true);
-}
-
-async function handleCancelFlowSubmit(acceptDiscount) {
-  setApplyingDiscount(true);
-  try {
-    const res = await fetch("/api/cancel-flow", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ reason: cancelReason, acceptDiscount }),
-    });
-    const data = await res.json();
-
-    if (data.discountApplied) {
-      setShowCancelFlow(false);
-      alert("Your discount has been applied! You'll be charged $25/mo for the next 2 months. Thank you for staying! 🎉");
-      return;
-    }
-
-    // Proceed to Stripe portal
-    setShowCancelFlow(false);
-    const portalRes = await fetch("/api/customer-portal", { method: "POST" });
-    const portalData = await portalRes.json();
-    if (portalData.url) window.location.href = portalData.url;
-  } catch (err) {
-    console.error("Cancel flow error:", err);
-  }
-  setApplyingDiscount(false);
-}
 
   const trialDaysLeft = business?.trial_ends_at
     ? Math.max(0, Math.ceil((new Date(business.trial_ends_at) - new Date()) / (1000 * 60 * 60 * 24)))
@@ -188,6 +202,7 @@ async function handleCancelFlowSubmit(acceptDiscount) {
     if (rating === 3) return { label: "Neutral", color: "bg-amber-100 text-amber-700" };
     return { label: "Negative", color: "bg-red-100 text-red-700" };
   }
+
   const totalReviews = reviews.length;
   const answeredReviews = reviews.filter(r => r.reviewReply).length;
   const responseRate = totalReviews > 0 ? Math.round((answeredReviews / totalReviews) * 100) : 0;
@@ -219,15 +234,15 @@ async function handleCancelFlowSubmit(acceptDiscount) {
           {isTrialing && (
             <span className="block md:hidden text-xs text-amber-600 font-medium">{trialDaysLeft}d left</span>
           )}
-          {isActive ? (
+          {isActive && business?.stripe_subscription_id ? (
             <button onClick={handleManageSubscription} className="border border-gray-200 text-gray-700 px-3 py-2 rounded-full text-xs md:text-sm hover:bg-gray-50">
               Manage
             </button>
-          ) : (
+          ) : !isActive ? (
             <button onClick={handleSubscribe} disabled={subscribing} className="bg-black text-white px-3 py-2 rounded-full text-xs md:text-sm hover:bg-gray-800 disabled:opacity-50">
               {subscribing ? "..." : "Subscribe $35/mo"}
             </button>
-          )}
+          ) : null}
           <UserButton afterSignOutUrl="/" />
         </div>
       </nav>
@@ -352,18 +367,18 @@ async function handleCancelFlowSubmit(acceptDiscount) {
           </div>
         )}
         {isTrialing && trialDaysLeft <= 3 && trialDaysLeft > 0 && (
-  <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-6">
-    <p className="text-amber-800 text-sm font-medium">Your trial ends in {trialDaysLeft} days. Subscribe to keep access.</p>
-  </div>
-)}
-{isTrialing && trialDaysLeft <= 0 && (
-  <div className="bg-red-50 border border-red-200 rounded-2xl p-4 mb-6 flex items-center justify-between">
-    <p className="text-red-800 text-sm font-medium">Your trial has expired. Subscribe to continue using OwnerReply.</p>
-    <button onClick={handleSubscribe} className="bg-black text-white px-4 py-2 rounded-full text-xs hover:bg-gray-800">
-      Subscribe $35/mo
-    </button>
-  </div>
-)}
+          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-6">
+            <p className="text-amber-800 text-sm font-medium">Your trial ends in {trialDaysLeft} days. Subscribe to keep access.</p>
+          </div>
+        )}
+        {isTrialing && trialDaysLeft <= 0 && (
+          <div className="bg-red-50 border border-red-200 rounded-2xl p-4 mb-6 flex items-center justify-between">
+            <p className="text-red-800 text-sm font-medium">Your trial has expired. Subscribe to continue using OwnerReply.</p>
+            <button onClick={handleSubscribe} className="bg-black text-white px-4 py-2 rounded-full text-xs hover:bg-gray-800">
+              Subscribe $35/mo
+            </button>
+          </div>
+        )}
         {reviews.length > 0 && (
           <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-8">
             <h2 className="font-semibold text-gray-900 mb-4">Review Analytics</h2>
@@ -394,6 +409,38 @@ async function handleCancelFlowSubmit(acceptDiscount) {
                   <span className="text-xs text-gray-500 w-6 text-right">{count}</span>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+        {referralCode && (
+          <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-8">
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h2 className="font-semibold text-gray-900">🎁 Refer a business — get a free month</h2>
+                <p className="text-sm text-gray-500 mt-1">Share your referral link. When a friend subscribes you both get one month free.</p>
+              </div>
+              {referralCount > 0 && (
+                <div className="text-right">
+                  <p className="text-2xl font-bold text-green-600">{referralCount}</p>
+                  <p className="text-xs text-gray-500">referral{referralCount !== 1 ? "s" : ""}</p>
+                </div>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <div className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2">
+                <p className="text-xs text-gray-400 mb-0.5">Your referral link</p>
+                <p className="text-sm text-gray-900 font-mono">{`https://getownerreply.com/?ref=${referralCode}`}</p>
+              </div>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(`https://getownerreply.com/?ref=${referralCode}`);
+                  setReferralCopied(true);
+                  setTimeout(() => setReferralCopied(false), 2000);
+                }}
+                className="bg-black text-white px-4 py-2 rounded-xl text-sm hover:bg-gray-800 whitespace-nowrap"
+              >
+                {referralCopied ? "Copied! ✓" : "Copy link"}
+              </button>
             </div>
           </div>
         )}
@@ -455,18 +502,18 @@ async function handleCancelFlowSubmit(acceptDiscount) {
           })
           .map(review => (
             <div key={review.reviewId} className="bg-white rounded-2xl border border-gray-100 p-4 md:p-6 mb-4">
-            <div className="flex items-start justify-between mb-3">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <p className="font-medium text-gray-900 text-sm">{review.reviewer?.displayName || "Anonymous"}</p>
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${getSentiment(review.starRating).color}`}>
-                    {getSentiment(review.starRating).label}
-                  </span>
+              <div className="flex items-start justify-between mb-3">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <p className="font-medium text-gray-900 text-sm">{review.reviewer?.displayName || "Anonymous"}</p>
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${getSentiment(review.starRating).color}`}>
+                      {getSentiment(review.starRating).label}
+                    </span>
+                  </div>
+                  <p className="text-amber-500 text-sm">{"★".repeat(starRatingMap[review.starRating] || 0)}{"☆".repeat(5 - (starRatingMap[review.starRating] || 0))}</p>
                 </div>
-                <p className="text-amber-500 text-sm">{"★".repeat(starRatingMap[review.starRating] || 0)}{"☆".repeat(5 - (starRatingMap[review.starRating] || 0))}</p>
+                <p className="text-xs text-gray-400">{new Date(review.createTime).toLocaleDateString()}</p>
               </div>
-              <p className="text-xs text-gray-400">{new Date(review.createTime).toLocaleDateString()}</p>
-            </div>
               <p className="text-gray-600 text-sm mb-4">{review.comment || "No comment left."}</p>
               {review.reviewReply && (
                 <div className="bg-gray-50 rounded-xl p-3 mb-4">
@@ -478,22 +525,22 @@ async function handleCancelFlowSubmit(acceptDiscount) {
                 <>
                   {responses[review.reviewId] && (
                     <div className="bg-blue-50 rounded-xl p-3 mb-3">
-  <div className="flex items-center justify-between mb-1">
-    <p className="text-xs text-gray-400">AI draft:</p>
-    <button
-      onClick={() => handleSaveTemplate(review.reviewId)}
-      className="text-xs text-gray-500 hover:text-gray-900 border border-gray-200 px-2 py-0.5 rounded-full hover:bg-white"
-    >
-      Save as template
-    </button>
-  </div>
-  <textarea
-    value={responses[review.reviewId]}
-    onChange={e => setResponses(prev => ({ ...prev, [review.reviewId]: e.target.value }))}
-    className="w-full bg-transparent text-gray-700 text-sm resize-none outline-none"
-    rows={3}
-  />
-</div>
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="text-xs text-gray-400">AI draft:</p>
+                        <button
+                          onClick={() => handleSaveTemplate(review.reviewId)}
+                          className="text-xs text-gray-500 hover:text-gray-900 border border-gray-200 px-2 py-0.5 rounded-full hover:bg-white"
+                        >
+                          Save as template
+                        </button>
+                      </div>
+                      <textarea
+                        value={responses[review.reviewId]}
+                        onChange={e => setResponses(prev => ({ ...prev, [review.reviewId]: e.target.value }))}
+                        className="w-full bg-transparent text-gray-700 text-sm resize-none outline-none"
+                        rows={3}
+                      />
+                    </div>
                   )}
                   <div className="flex gap-2 flex-wrap">
                     <button onClick={() => handleGenerate(review)} disabled={loading[review.reviewId]} className="bg-black text-white px-4 py-2 rounded-full text-xs hover:bg-gray-800 disabled:opacity-50">
@@ -531,10 +578,10 @@ async function handleCancelFlowSubmit(acceptDiscount) {
                       key={reason}
                       onClick={() => setCancelReason(reason)}
                       className={`w-full text-left px-4 py-3 rounded-xl text-sm border transition-all text-gray-900 ${
-                    cancelReason === reason
-                      ? "border-black bg-gray-50 font-medium"
-                      : "border-gray-200 hover:border-gray-400"
-                  }`}
+                        cancelReason === reason
+                          ? "border-black bg-gray-50 font-medium"
+                          : "border-gray-200 hover:border-gray-400"
+                      }`}
                     >
                       {reason}
                     </button>
