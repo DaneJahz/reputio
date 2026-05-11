@@ -25,7 +25,9 @@ export async function POST(request) {
     }
 
     // Get referral code from header if present
-    const referredBy = request.headers.get('x-referral-code') || null;
+    const cookieHeader = request.headers.get('cookie') || '';
+    const referralMatch = cookieHeader.match(/referral_code=([^;]+)/);
+    const referredBy = referralMatch ? referralMatch[1] : null;
 
     // Try to insert, handle duplicate email gracefully
     try {

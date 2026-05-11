@@ -2,6 +2,7 @@ import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import TonePreview from "./components/TonePreview";
+import ReferralTracker from "./components/ReferralTracker";
 
 export default async function Home() {
   const { userId } = await auth();
@@ -9,6 +10,7 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen bg-white font-sans flex flex-col">
+      <ReferralTracker />
       <nav className="flex items-center justify-between px-8 py-5 border-b border-gray-100">
         <span className="text-xl font-bold text-gray-900">OwnerReply</span>
         <div className="flex gap-4 items-center">
