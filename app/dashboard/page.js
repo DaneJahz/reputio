@@ -215,53 +215,110 @@ export default function Dashboard() {
             <button onClick={fetchReviews} className="text-sm text-green-700 hover:text-green-900 underline">Refresh</button>
           </div>
         )}
-        {!googleConnected || !business?.business_name ? (
+        {!googleConnected || !business?.business_name || !isActive ? (
           <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
-            <h2 className="font-semibold text-gray-900 mb-1">Get started with OwnerReply</h2>
-            <p className="text-sm text-gray-500 mb-4">Complete these steps to start responding to reviews.</p>
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="font-semibold text-gray-900">
+                  Welcome{user?.firstName ? `, ${user.firstName}` : ""}! Let's get you set up 👋
+                </h2>
+                <p className="text-sm text-gray-500 mt-0.5">Complete these steps to start responding to reviews.</p>
+              </div>
+              <div className="text-right">
+                <p className="text-xs text-gray-400">
+                  {[true, !!business?.business_name, googleConnected, isActive].filter(Boolean).length} of 4 complete
+                </p>
+                <div className="flex gap-1 mt-1">
+                  {[true, !!business?.business_name, googleConnected, isActive].map((done, i) => (
+                    <div key={i} className={`h-1.5 w-8 rounded-full ${done ? "bg-green-500" : "bg-gray-200"}`} />
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <span className="text-white text-xs">✓</span>
                 </div>
-                <span className="text-sm text-gray-400 line-through">Create your account</span>
+                <div>
+                  <span className="text-sm text-gray-400 line-through">Create your account</span>
+                  <p className="text-xs text-gray-400 mt-0.5">You're in — welcome to OwnerReply!</p>
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${business?.business_name ? "bg-green-500" : "border-2 border-gray-200"}`}>
+              <div className="flex items-start gap-3">
+                <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${business?.business_name ? "bg-green-500" : "border-2 border-gray-200"}`}>
                   {business?.business_name && <span className="text-white text-xs">✓</span>}
                 </div>
-                <span className={`text-sm ${business?.business_name ? "text-gray-400 line-through" : "text-gray-900"}`}>
-                  Enter your business name
-                </span>
-                {!business?.business_name && (
-                  <a href="/settings" className="text-xs text-blue-600 hover:underline ml-auto">Go to Settings →</a>
-                )}
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <span className={`text-sm ${business?.business_name ? "text-gray-400 line-through" : "text-gray-900 font-medium"}`}>
+                      Enter your business name
+                    </span>
+                    {!business?.business_name && (
+                      <a href="/settings" className="text-xs bg-black text-white px-3 py-1 rounded-full hover:bg-gray-800">Go to Settings →</a>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-400 mt-0.5">So your AI responses are personalized to your brand.</p>
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${googleConnected ? "bg-green-500" : "border-2 border-gray-200"}`}>
+              <div className="flex items-start gap-3">
+                <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${googleConnected ? "bg-green-500" : "border-2 border-gray-200"}`}>
                   {googleConnected && <span className="text-white text-xs">✓</span>}
                 </div>
-                <span className={`text-sm ${googleConnected ? "text-gray-400 line-through" : "text-gray-900"}`}>
-                  Connect your Google Business Profile
-                </span>
-                {!googleConnected && (
-                  <a href="/api/google/connect" className="text-xs text-blue-600 hover:underline ml-auto">Connect →</a>
-                )}
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <span className={`text-sm ${googleConnected ? "text-gray-400 line-through" : "text-gray-900 font-medium"}`}>
+                      Connect your Google Business Profile
+                    </span>
+                    {!googleConnected && (
+                      <a href="/api/google/connect" className="text-xs bg-black text-white px-3 py-1 rounded-full hover:bg-gray-800">Connect →</a>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-400 mt-0.5">Takes 30 seconds. Required to pull in your reviews and post responses.</p>
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${isActive ? "bg-green-500" : "border-2 border-gray-200"}`}>
+              <div className="flex items-start gap-3">
+                <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${isActive ? "bg-green-500" : "border-2 border-gray-200"}`}>
                   {isActive && <span className="text-white text-xs">✓</span>}
                 </div>
-                <span className={`text-sm ${isActive ? "text-gray-400 line-through" : "text-gray-900"}`}>
-                  Subscribe to get full access
-                </span>
-                {!isActive && (
-                  <button onClick={handleSubscribe} className="text-xs text-blue-600 hover:underline ml-auto">Subscribe →</button>
-                )}
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <span className={`text-sm ${isActive ? "text-gray-400 line-through" : "text-gray-900 font-medium"}`}>
+                      Subscribe to get full access
+                    </span>
+                    {!isActive && (
+                      <button onClick={handleSubscribe} className="text-xs bg-black text-white px-3 py-1 rounded-full hover:bg-gray-800">Subscribe $35/mo →</button>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-400 mt-0.5">14-day free trial included. Cancel anytime.</p>
+                </div>
               </div>
             </div>
           </div>
-        ) : null}
+        ) : (
+          <div className="bg-green-50 border border-green-200 rounded-2xl p-6 mb-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-semibold text-green-900">You're all set! 🎉</p>
+                <p className="text-sm text-green-700 mt-1">OwnerReply is monitoring your reviews and ready to draft responses.</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-3 gap-3 mt-4">
+              <a href="/settings" className="bg-white border border-green-200 rounded-xl p-3 text-center hover:border-green-400 transition-all">
+                <p className="text-xs font-medium text-gray-900">⚙️ Settings</p>
+                <p className="text-xs text-gray-500 mt-0.5">Adjust your tone</p>
+              </a>
+              <a href="/templates" className="bg-white border border-green-200 rounded-xl p-3 text-center hover:border-green-400 transition-all">
+                <p className="text-xs font-medium text-gray-900">📝 Templates</p>
+                <p className="text-xs text-gray-500 mt-0.5">Save responses</p>
+              </a>
+              <a href="/history" className="bg-white border border-green-200 rounded-xl p-3 text-center hover:border-green-400 transition-all">
+                <p className="text-xs font-medium text-gray-900">📊 History</p>
+                <p className="text-xs text-gray-500 mt-0.5">View past responses</p>
+              </a>
+            </div>
+          </div>
+        )}
         {isTrialing && trialDaysLeft <= 3 && trialDaysLeft > 0 && (
   <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-6">
     <p className="text-amber-800 text-sm font-medium">Your trial ends in {trialDaysLeft} days. Subscribe to keep access.</p>
