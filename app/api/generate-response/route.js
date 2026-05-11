@@ -2,6 +2,11 @@ import { auth } from "@clerk/nextjs/server";
 import { generateReviewResponse } from "@/lib/ai";
 import sql from "@/lib/db";
 
+const adminUserIds = [
+  'user_3DN04mExtQRhazlDsqU3nzFMWoo', // hagen900@gmail.com
+  'user_3DN0r63rLgdtSK8NNtE823dKDXU', // getownerreply@gmail.com
+];
+
 export async function POST(request) {
   try {
     const { userId } = await auth();
@@ -24,14 +29,16 @@ export async function POST(request) {
     }
 
     const business = businesses[0];
+    const isAdmin = adminUserIds.includes(userId);
 
-    // Check subscription status
-    const isActive = business.subscription_status === "active";
-    const isTrial = business.subscription_status === "trial";
-    const trialExpired = isTrial && business.trial_ends_at && new Date(business.trial_ends_at) < new Date();
+    if (!isAdmin) {
+      const isActive = business.subscription_status === "active";
+      const isTrial = business.subscription_status === "trial";
+      const trialExpired = isTrial && business.trial_ends_at && new Date(business.trial_ends_at) < new Date();
 
-    if (!isActive && (!isTrial || trialExpired)) {
-      return Response.json({ error: "subscription_required" }, { status: 403 });
+      if (!isActive && (!isTrial || trialExpired)) {
+        return Response.json({ error: "subscription_required" }, { status: 403 });
+      }
     }
 
     const businessName = business.business_name || "";
