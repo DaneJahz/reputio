@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import TonePreview from "./components/TonePreview";
 
 export default async function Home() {
   const { userId } = await auth();
@@ -58,6 +59,11 @@ export default async function Home() {
                 <p className="text-sm text-gray-500">Review the draft and post it to Google with one click. Edit anytime before posting.</p>
               </div>
             </div>
+          </div>
+          <div className="mb-24">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">See the AI in action</h2>
+            <p className="text-gray-500 mb-8 max-w-xl mx-auto">Here's a real example. A customer leaves a review — OwnerReply drafts a personalized response instantly. Choose your tone:</p>
+            <TonePreview />
           </div>
           <div className="mb-24">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Built for small businesses</h2>
