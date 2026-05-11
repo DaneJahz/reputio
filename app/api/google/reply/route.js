@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import sql from "@/lib/db";
+import { getValidAccessToken } from "@/lib/google";
 
 export async function POST(request) {
   try {
@@ -20,12 +21,21 @@ export async function POST(request) {
 
     const business = businesses[0];
 
+    // Get valid access token (refreshes if expired)
+    let accessToken;
+    try {
+      accessToken = await getValidAccessToken(business);
+    } catch (err) {
+      console.error("Token refresh error:", err);
+      return Response.json({ error: "Google token expired. Please reconnect." }, { status: 401 });
+    }
+
     const res = await fetch(
       `https://mybusiness.googleapis.com/v4/${reviewName}/reply`,
       {
         method: "PUT",
         headers: {
-          Authorization: `Bearer ${business.google_access_token}`,
+          Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ comment: replyText }),

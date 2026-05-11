@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import sql from "@/lib/db";
+import { sendWelcomeEmail } from "@/lib/email";
 
 export async function POST(request) {
   try {
@@ -30,9 +31,19 @@ export async function POST(request) {
         VALUES (${name}, ${email}, ${userId}, 'trial', NOW() + INTERVAL '14 days')
         RETURNING *
       `;
+
+      // Send welcome email to new signups
+      try {
+        await sendWelcomeEmail({
+          businessEmail: email,
+          businessName: name,
+        });
+      } catch (emailError) {
+        console.error("Welcome email error (non-fatal):", emailError);
+      }
+
       return Response.json({ business: business[0] });
     } catch (insertError) {
-      // If duplicate email, fetch by email instead
       if (insertError.code === '23505') {
         const byEmail = await sql`
           SELECT * FROM businesses WHERE email = ${email}
