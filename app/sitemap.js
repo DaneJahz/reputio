@@ -1,5 +1,21 @@
-export default function sitemap() {
+import sql from "@/lib/db";
+
+export default async function sitemap() {
   const baseUrl = 'https://getownerreply.com';
+
+  // Fetch all published blog posts from database
+  const posts = await sql`
+    SELECT slug, updated_at FROM blog_posts 
+    WHERE published = true 
+    ORDER BY created_at DESC
+  `;
+
+  const blogUrls = posts.map(post => ({
+    url: `${baseUrl}/blog/${post.slug}`,
+    lastModified: new Date(post.updated_at),
+    changeFrequency: 'monthly',
+    priority: 0.8,
+  }));
 
   return [
     {
@@ -14,36 +30,7 @@ export default function sitemap() {
       changeFrequency: 'weekly',
       priority: 0.9,
     },
-    {
-      url: `${baseUrl}/blog/jacksonville-small-businesses-losing-customers-google-reviews`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/blog/how-to-respond-to-negative-google-review`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/blog/google-review-mistakes-small-business`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/blog/google-reviews-local-search-ranking-2026`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/blog/cost-of-ignoring-google-reviews`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
+    ...blogUrls,
     {
       url: `${baseUrl}/privacy`,
       lastModified: new Date(),
