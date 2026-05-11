@@ -19,8 +19,22 @@ export async function POST(request) {
       SELECT * FROM businesses WHERE clerk_user_id = ${userId}
     `;
 
-    const businessName = businesses[0]?.business_name || "";
+    if (!businesses.length) {
+      return Response.json({ error: "Business not found" }, { status: 404 });
+    }
 
+    const business = businesses[0];
+
+    // Check subscription status
+    const isActive = business.subscription_status === "active";
+    const isTrial = business.subscription_status === "trial";
+    const trialExpired = isTrial && business.trial_ends_at && new Date(business.trial_ends_at) < new Date();
+
+    if (!isActive && (!isTrial || trialExpired)) {
+      return Response.json({ error: "subscription_required" }, { status: 403 });
+    }
+
+    const businessName = business.business_name || "";
     const response = await generateReviewResponse(review, businessName, tone || "professional");
 
     return Response.json({ response });

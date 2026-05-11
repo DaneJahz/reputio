@@ -76,6 +76,10 @@ export default function Dashboard() {
         }),
       });
       const data = await res.json();
+      if (data.error === "subscription_required") {
+        alert("Your trial has expired. Please subscribe to continue generating responses.");
+        return;
+      }
       setResponses(prev => ({ ...prev, [review.reviewId]: data.response }));
     } catch (err) {
       console.error("Generate error:", err);
@@ -240,11 +244,19 @@ export default function Dashboard() {
             </div>
           </div>
         ) : null}
-        {isTrialing && trialDaysLeft <= 3 && (
-          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-6">
-            <p className="text-amber-800 text-sm font-medium">Your trial ends in {trialDaysLeft} days. Subscribe to keep access.</p>
-          </div>
-        )}
+        {isTrialing && trialDaysLeft <= 3 && trialDaysLeft > 0 && (
+  <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-6">
+    <p className="text-amber-800 text-sm font-medium">Your trial ends in {trialDaysLeft} days. Subscribe to keep access.</p>
+  </div>
+)}
+{isTrialing && trialDaysLeft <= 0 && (
+  <div className="bg-red-50 border border-red-200 rounded-2xl p-4 mb-6 flex items-center justify-between">
+    <p className="text-red-800 text-sm font-medium">Your trial has expired. Subscribe to continue using OwnerReply.</p>
+    <button onClick={handleSubscribe} className="bg-black text-white px-4 py-2 rounded-full text-xs hover:bg-gray-800">
+      Subscribe $35/mo
+    </button>
+  </div>
+)}
         {reviews.length > 0 && (
           <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-8">
             <h2 className="font-semibold text-gray-900 mb-4">Review Analytics</h2>
