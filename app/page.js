@@ -16,16 +16,16 @@ export default async function Home() {
         <div className="flex gap-4 items-center">
   <Link href="/blog" className="text-sm text-gray-600 hover:text-gray-900 hidden md:block">Blog</Link>
   <Link href="/sign-in" className="text-sm text-gray-600 hover:text-gray-900">Log in</Link>
-  <Link href="/sign-up" className="text-sm bg-black text-white px-4 py-2 rounded-full hover:bg-gray-800">Start free trial</Link>
+  <Link href="/waitlist" className="text-sm bg-black text-white px-4 py-2 rounded-full hover:bg-gray-800">Start free trial</Link>
 </div>
       </nav>
       <main className="flex-1">
         <div className="max-w-3xl mx-auto px-4 md:px-8 py-16 md:py-24 text-center">
-          <p className="inline-block bg-green-50 text-green-700 text-sm font-medium px-4 py-1 rounded-full mb-6">14-day free trial — no credit card required</p>
+          <p className="inline-block bg-amber-50 text-amber-700 text-sm font-medium px-4 py-1 rounded-full mb-6">🚀 Launching soon — join the waitlist</p>
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight mb-6">Never ignore a Google review again</h1>
           <p className="text-lg md:text-xl text-gray-500 mb-10 max-w-xl mx-auto">OwnerReply uses AI to draft professional responses to your Google reviews. You approve with one click. Runs on autopilot.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-            <Link href="/sign-up" className="bg-black text-white px-8 py-3 rounded-full text-sm font-medium hover:bg-gray-800">Start free — 14 days free</Link>
+            <Link href="/waitlist" className="bg-black text-white px-8 py-3 rounded-full text-sm font-medium hover:bg-gray-800">Start free — 14 days free</Link>
             <Link href="#how-it-works" className="border border-gray-200 text-gray-700 px-8 py-3 rounded-full text-sm font-medium hover:bg-gray-50">See how it works</Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-24">
@@ -142,7 +142,7 @@ export default async function Home() {
               <div className="border-t border-gray-100 pt-4 mb-6">
                 <p className="text-xs text-gray-400 text-center">🚀 More features coming soon</p>
               </div>
-              <Link href="/sign-up" className="block w-full bg-black text-white py-3 rounded-full text-sm font-medium hover:bg-gray-800 text-center">Start free trial</Link>
+              <Link href="/waitlist" className="block w-full bg-black text-white py-3 rounded-full text-sm font-medium hover:bg-gray-800 text-center">Start free trial</Link>
             </div>
           </div>
           <div className="mb-24 text-left">
@@ -192,7 +192,7 @@ export default async function Home() {
           <div className="bg-black rounded-3xl p-8 md:p-12 text-center text-white mb-8">
             <h2 className="text-3xl font-bold mb-4">Ready to stop ignoring reviews?</h2>
             <p className="text-gray-400 mb-8 max-w-md mx-auto">Join small business owners who are building better reputations with OwnerReply.</p>
-            <Link href="/sign-up" className="inline-block bg-white text-black px-8 py-3 rounded-full text-sm font-medium hover:bg-gray-100">Start your free 14-day trial</Link>
+            <Link href="/waitlist" className="inline-block bg-white text-black px-8 py-3 rounded-full text-sm font-medium hover:bg-gray-100">Start your free 14-day trial</Link>
           </div>
         </div>
       </main>
