@@ -25,12 +25,14 @@ export async function POST(request) {
     if (event.type === "customer.subscription.created") {
       const subscription = event.data.object;
       const userId = subscription.metadata.userId;
+      const plan = subscription.metadata.plan || "reviews";
 
       if (userId) {
         await sql`
           UPDATE businesses 
           SET subscription_status = 'active', 
-              stripe_subscription_id = ${subscription.id}
+              stripe_subscription_id = ${subscription.id},
+              plan = ${plan}
           WHERE clerk_user_id = ${userId}
         `;
       }
@@ -41,7 +43,6 @@ export async function POST(request) {
       const userId = subscription.metadata.userId;
 
       if (userId) {
-        // Get the business first
         const businesses = await sql`
           SELECT * FROM businesses WHERE clerk_user_id = ${userId}
         `;
@@ -49,7 +50,6 @@ export async function POST(request) {
         if (businesses.length) {
           const business = businesses[0];
 
-          // Delete response drafts first (they reference reviews)
           await sql`
             DELETE FROM response_drafts
             WHERE review_id IN (
@@ -57,12 +57,10 @@ export async function POST(request) {
             )
           `;
 
-          // Delete reviews
           await sql`
             DELETE FROM reviews WHERE business_id = ${business.id}
           `;
 
-          // Revoke Google token if present
           if (business.google_access_token) {
             try {
               await fetch(
@@ -74,7 +72,6 @@ export async function POST(request) {
             }
           }
 
-          // Clear sensitive data and mark as inactive
           await sql`
             UPDATE businesses 
             SET subscription_status = 'inactive',
@@ -94,14 +91,24 @@ export async function POST(request) {
     if (event.type === "customer.subscription.updated") {
       const subscription = event.data.object;
       const userId = subscription.metadata.userId;
+      const plan = subscription.metadata.plan;
 
       if (userId) {
         const status = subscription.status === "active" ? "active" : "inactive";
-        await sql`
-          UPDATE businesses 
-          SET subscription_status = ${status}
-          WHERE clerk_user_id = ${userId}
-        `;
+        if (plan) {
+          await sql`
+            UPDATE businesses 
+            SET subscription_status = ${status},
+                plan = ${plan}
+            WHERE clerk_user_id = ${userId}
+          `;
+        } else {
+          await sql`
+            UPDATE businesses 
+            SET subscription_status = ${status}
+            WHERE clerk_user_id = ${userId}
+          `;
+        }
       }
     }
 

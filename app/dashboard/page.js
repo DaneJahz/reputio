@@ -8,6 +8,7 @@ export default function Dashboard() {
   const [reviews, setReviews] = useState([]);
   const [reviewsLoading, setReviewsLoading] = useState(false);
   const [subscribing, setSubscribing] = useState(false);
+  const [showPlanPicker, setShowPlanPicker] = useState(false);
   const [responses, setResponses] = useState({});
   const [loading, setLoading] = useState({});
   const [posting, setPosting] = useState({});
@@ -175,17 +176,22 @@ export default function Dashboard() {
     setApplyingDiscount(false);
   }
 
-  async function handleSubscribe() {
-    setSubscribing(true);
-    try {
-      const res = await fetch("/api/create-checkout", { method: "POST" });
-      const data = await res.json();
-      if (data.url) window.location.href = data.url;
-    } catch (err) {
-      alert("Error starting checkout. Please try again.");
-    }
-    setSubscribing(false);
+  async function handleSubscribe(plan = "reviews") {
+  setSubscribing(true);
+  try {
+    const res = await fetch("/api/create-checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ plan }),
+    });
+    const data = await res.json();
+    if (data.url) window.location.href = data.url;
+  } catch (err) {
+    console.error("Checkout error:", err);
+    alert("Error starting checkout. Please try again.");
   }
+  setSubscribing(false);
+}
 
   const trialDaysLeft = business?.trial_ends_at
     ? Math.max(0, Math.ceil((new Date(business.trial_ends_at) - new Date()) / (1000 * 60 * 60 * 24)))
@@ -240,8 +246,8 @@ export default function Dashboard() {
               Manage
             </button>
           ) : !isActive ? (
-            <button onClick={handleSubscribe} disabled={subscribing} className="bg-black text-white px-3 py-2 rounded-full text-xs md:text-sm hover:bg-gray-800 disabled:opacity-50">
-              {subscribing ? "..." : "Subscribe $35/mo"}
+            <button onClick={() => setShowPlanPicker(true)} disabled={subscribing} className="bg-black text-white px-3 py-2 rounded-full text-xs md:text-sm hover:bg-gray-800 disabled:opacity-50">
+              {subscribing ? "..." : "Subscribe"}
             </button>
           ) : null}
           <UserButton afterSignOutUrl="/" />
@@ -348,7 +354,7 @@ export default function Dashboard() {
                       Subscribe to get full access
                     </span>
                     {!isActive && (
-                      <button onClick={handleSubscribe} className="text-xs bg-black text-white px-3 py-1 rounded-full hover:bg-gray-800">Subscribe $35/mo →</button>
+                      <button onClick={() => setShowPlanPicker(true)} className="text-xs bg-black text-white px-3 py-1 rounded-full hover:bg-gray-800">Subscribe $35/mo →</button>
                     )}
                   </div>
                   <p className="text-xs text-gray-400 mt-0.5">14-day free trial included. Cancel anytime.</p>
@@ -388,7 +394,7 @@ export default function Dashboard() {
         {isTrialing && trialDaysLeft <= 0 && (
           <div className="bg-red-50 border border-red-200 rounded-2xl p-4 mb-6 flex items-center justify-between">
             <p className="text-red-800 text-sm font-medium">Your trial has expired. Subscribe to continue using OwnerReply.</p>
-            <button onClick={handleSubscribe} className="bg-black text-white px-4 py-2 rounded-full text-xs hover:bg-gray-800">
+            <button onClick={() => setShowPlanPicker(true)} className="bg-black text-white px-4 py-2 rounded-full text-xs hover:bg-gray-800">
               Subscribe $35/mo
             </button>
           </div>
@@ -663,6 +669,64 @@ export default function Dashboard() {
           </div>
         </div>
       )}
+      
+      {showPlanPicker && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl">
+      <h2 className="text-lg font-bold text-gray-900 mb-2">Choose your plan</h2>
+      <p className="text-sm text-gray-500 mb-6">All plans include a 14-day free trial. Cancel anytime.</p>
+      <div className="space-y-3 mb-6">
+        <button
+          onClick={() => { setShowPlanPicker(false); handleSubscribe("followup"); }}
+          disabled={subscribing}
+          className="w-full text-left px-4 py-4 rounded-xl border-2 border-gray-200 hover:border-black transition-all"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-semibold text-gray-900">🔨 Follow-Up Messages</p>
+              <p className="text-xs text-gray-500 mt-0.5">Estimate follow-ups & customer win-back</p>
+            </div>
+            <p className="font-bold text-gray-900">$29/mo</p>
+          </div>
+        </button>
+        <button
+          onClick={() => { setShowPlanPicker(false); handleSubscribe("reviews"); }}
+          disabled={subscribing}
+          className="w-full text-left px-4 py-4 rounded-xl border-2 border-gray-200 hover:border-black transition-all"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-semibold text-gray-900">⭐ Google Review Replies</p>
+              <p className="text-xs text-gray-500 mt-0.5">AI responses posted to Google with one click</p>
+            </div>
+            <p className="font-bold text-gray-900">$35/mo</p>
+          </div>
+        </button>
+        <button
+          onClick={() => { setShowPlanPicker(false); handleSubscribe("both"); }}
+          disabled={subscribing}
+          className="w-full text-left px-4 py-4 rounded-xl border-2 border-green-400 hover:border-green-600 transition-all relative"
+        >
+          <span className="absolute -top-2.5 left-4 bg-green-500 text-white text-xs font-semibold px-2 py-0.5 rounded-full">Best value</span>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-semibold text-gray-900">✨ Both Tools</p>
+              <p className="text-xs text-gray-500 mt-0.5">Full access to everything — save $15/mo</p>
+            </div>
+            <p className="font-bold text-gray-900">$49/mo</p>
+          </div>
+        </button>
+      </div>
+      <button
+        onClick={() => setShowPlanPicker(false)}
+        className="w-full border border-gray-200 text-gray-600 py-2 rounded-full text-sm hover:bg-gray-50"
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
+)}
+
 
       <footer className="border-t border-gray-100 px-8 py-6 text-center mt-8">
         <div className="flex justify-center gap-6 text-sm text-gray-400 flex-wrap">
