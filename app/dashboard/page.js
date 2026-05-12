@@ -225,6 +225,7 @@ export default function Dashboard() {
           <a href="/history" className="hidden md:block text-sm text-gray-500 hover:text-gray-900">History</a>
           <a href="/templates" className="hidden md:block text-sm text-gray-500 hover:text-gray-900">Templates</a>
           <a href="/settings" className="hidden md:block text-sm text-gray-500 hover:text-gray-900">Settings</a>
+          <a href="/tools/followup" className="hidden md:block text-sm text-gray-500 hover:text-gray-900">Follow-Up Tool</a>
           <a href="/blog" className="hidden md:block text-sm text-gray-500 hover:text-gray-900">Blog</a>
         </div>
         <div className="flex items-center gap-2 md:gap-4">
@@ -247,6 +248,19 @@ export default function Dashboard() {
         </div>
       </nav>
       <main className="max-w-3xl mx-auto px-4 md:px-8 py-8 md:py-12">
+        {/* Tools Hub */}
+<div className="grid grid-cols-2 gap-4 mb-8">
+  <div className="bg-white border-2 border-black rounded-2xl p-5">
+    <p className="text-lg font-bold text-gray-900 mb-1">📬 Review Replies</p>
+    <p className="text-xs text-gray-500 mb-3">AI responses to your Google reviews. One-click post.</p>
+    <p className="text-xs font-medium text-gray-900">You're here ↓</p>
+  </div>
+  <a href="/tools/followup" className="bg-white border border-gray-200 rounded-2xl p-5 hover:border-gray-400 transition-all block">
+    <p className="text-lg font-bold text-gray-900 mb-1">🔨 Follow-Up Tool</p>
+    <p className="text-xs text-gray-500 mb-3">Generate estimate follow-ups and win-back messages.</p>
+    <p className="text-xs font-medium text-green-600">Available now →</p>
+  </a>
+</div>
         {!googleConnected && (
           <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 md:p-6 mb-6 flex items-center justify-between gap-4">
             <div>
