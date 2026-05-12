@@ -93,7 +93,7 @@ export default function FollowUpTool() {
         <div className="flex items-center gap-6">
           <a href="/dashboard" className="text-xl font-bold text-gray-900">OwnerReply</a>
           <a href="/dashboard" className="hidden md:block text-sm text-gray-500 hover:text-gray-900">Review Replies</a>
-          <span className="hidden md:block text-sm text-gray-900 font-medium">Follow-Up</span>
+          <span className="hidden md:block text-sm text-gray-900 font-medium">Second Knock</span>
           <a href="/settings" className="hidden md:block text-sm text-gray-500 hover:text-gray-900">Settings</a>
         </div>
         <UserButton afterSignOutUrl="/" />
@@ -101,8 +101,8 @@ export default function FollowUpTool() {
 
       <main className="max-w-2xl mx-auto px-4 md:px-8 py-8 md:py-12">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Follow-Up Messages</h1>
-          <p className="text-gray-500 text-sm mt-1">Generate ready-to-send emails, texts, and voicemail scripts in seconds.</p>
+          <h1 className="text-2xl font-bold text-gray-900">Second Knock</h1>
+          <p className="text-gray-500 text-sm mt-1">Follow up on estimates and win back past customers — email, text, and voicemail in seconds.</p>
         </div>
 
         <div className="flex gap-1 mb-6 bg-gray-100 p-1 rounded-xl w-fit">

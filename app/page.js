@@ -24,7 +24,7 @@ export default async function Home() {
         <div className="max-w-3xl mx-auto px-4 md:px-8 py-12 md:py-24 text-center">
 
           {/* Hero */}
-          <p className="inline-block bg-green-50 text-green-700 text-xs md:text-sm font-medium px-4 py-1 rounded-full mb-6">✅ Follow-Up tool live now — Google Reviews launching July 5th</p>
+          <p className="inline-block bg-green-50 text-green-700 text-xs md:text-sm font-medium px-4 py-1 rounded-full mb-6">✅ Second Knock — Google Reviews launching July 5th</p>
           <h1 className="text-3xl md:text-5xl font-bold text-gray-900 leading-tight mb-6">Win more business with every message you send</h1>
           <p className="text-base md:text-xl text-gray-500 mb-8 max-w-xl mx-auto">OwnerReply gives local business owners AI-powered tools to follow up on estimates, win back past customers, and respond to Google reviews — all in seconds.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center mb-12">
@@ -58,7 +58,7 @@ export default async function Home() {
               <div className="border-2 border-black rounded-2xl p-6 relative">
                 <span className="absolute -top-3 left-4 bg-green-500 text-white text-xs font-semibold px-3 py-1 rounded-full">Available now — $29/mo</span>
                 <div className="text-2xl mb-3">🔨</div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">Contractor Follow-Up Tool</h3>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">Second Knock</h3>
                 <p className="text-sm text-gray-500 mb-4">Stop losing jobs to silence. Generate a ready-to-send email, text, and voicemail script for any estimate or past customer — in seconds.</p>
                 <ul className="text-sm text-gray-600 space-y-2 mb-6">
                   <li className="flex items-start gap-2"><span className="text-green-500 font-bold">✓</span> Estimate follow-up messages</li>
@@ -148,7 +148,7 @@ export default async function Home() {
 
               {/* Plan 1 */}
               <div className="bg-white rounded-2xl border border-gray-100 p-6 text-left">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Contractor Tool</p>
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Second Knock</p>
                 <p className="text-3xl font-bold text-gray-900 mb-1">$29<span className="text-base font-normal text-gray-500">/mo</span></p>
                 <p className="text-xs text-gray-400 mb-5">per location</p>
                 <ul className="text-sm text-gray-600 space-y-2 mb-6">
@@ -203,7 +203,7 @@ export default async function Home() {
                 },
                 {
                   q: "What's the difference between the plans?",
-                  a: "The Contractor Tool ($29/mo) gives you the Follow-Up Message generator — estimate follow-ups, customer win-backs, and voicemail scripts. The Review Replies plan ($35/mo) gives you AI-powered Google review responses. The Both Tools plan ($49/mo) includes everything and saves you $15/mo compared to buying separately."
+                  a: "Second Knock ($29/mo) gives you the Follow-Up Message generator — estimate follow-ups, customer win-backs, and voicemail scripts. The Review Replies plan ($35/mo) gives you AI-powered Google review responses. The Both Tools plan ($49/mo) includes everything and saves you $15/mo compared to buying separately."
                 },
                 {
                   q: "What does the Follow-Up tool actually generate?",
