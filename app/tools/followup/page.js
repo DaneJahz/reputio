@@ -11,15 +11,19 @@ export default function FollowUpTool() {
   const [messages, setMessages] = useState(null);
   const [copied, setCopied] = useState({});
   const [error, setError] = useState(null);
+  const [showEstimateContext, setShowEstimateContext] = useState(false);
+  const [showWinbackContext, setShowWinbackContext] = useState(false);
 
   const [estimateForm, setEstimateForm] = useState({
     customerName: "", jobType: "HVAC", estimateAmount: "",
     daysSince: "", tone: "friendly", notes: "",
+    callWentHow: "", customerSaid: "", concerns: "", extraContext: "",
   });
 
   const [winbackForm, setWinbackForm] = useState({
     customerName: "", lastJobType: "HVAC", timeAgo: "6 months",
     reason: "maintenance", tone: "friendly",
+    jobWentHow: "", memorableDetails: "", whyNeedYou: "", extraContext: "",
   });
 
   useEffect(() => {
@@ -102,25 +106,23 @@ export default function FollowUpTool() {
         </div>
 
         <div className="flex gap-1 mb-6 bg-gray-100 p-1 rounded-xl w-fit">
-          <button
-            type="button"
+          <button type="button"
             onClick={() => { setActiveTab("estimate"); setMessages(null); setError(null); }}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === "estimate" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
-          >
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === "estimate" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}>
             Estimate Follow-Up
           </button>
-          <button
-            type="button"
+          <button type="button"
             onClick={() => { setActiveTab("winback"); setMessages(null); setError(null); }}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === "winback" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
-          >
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === "winback" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}>
             Customer Win-Back
           </button>
         </div>
 
         <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
+
           {activeTab === "estimate" && (
             <div className="space-y-4">
+              {/* Basic fields */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-xs font-medium text-gray-700 mb-1 block">Customer Name</label>
@@ -153,7 +155,7 @@ export default function FollowUpTool() {
               </div>
               <div>
                 <label className="text-xs font-medium text-gray-700 mb-2 block">Tone</label>
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
                   {["friendly", "professional", "urgent"].map(t => (
                     <button type="button" key={t}
                       onClick={() => setEstimateForm(p => ({ ...p, tone: t }))}
@@ -163,18 +165,65 @@ export default function FollowUpTool() {
                   ))}
                 </div>
               </div>
-              <div>
-                <label className="text-xs font-medium text-gray-700 mb-1 block">Notes <span className="text-gray-400 font-normal">(optional)</span></label>
-                <input type="text" placeholder="e.g. They mentioned budget concerns..."
-                  value={estimateForm.notes}
-                  onChange={e => setEstimateForm(p => ({ ...p, notes: e.target.value }))}
-                  className={inputClass} />
+
+              {/* Structured context fields */}
+              <div className="border-t border-gray-100 pt-4 space-y-3">
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Customer Context <span className="font-normal normal-case text-gray-400">— the more you add, the better the message</span></p>
+                <div>
+                  <label className="text-xs font-medium text-gray-700 mb-1 block">How did the initial conversation go?</label>
+                  <select value={estimateForm.callWentHow}
+                    onChange={e => setEstimateForm(p => ({ ...p, callWentHow: e.target.value }))}
+                    className={selectClass}>
+                    <option value="">Select (optional)</option>
+                    <option value="great">Great — they seemed very interested</option>
+                    <option value="good">Good — seemed interested, no red flags</option>
+                    <option value="hesitant">Mixed — had some hesitation</option>
+                    <option value="concerned">They had specific concerns</option>
+                    <option value="nospoke">We haven't spoken — estimate was sent cold</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-gray-700 mb-1 block">What did they say or ask about? <span className="text-gray-400 font-normal">(optional)</span></label>
+                  <input type="text"
+                    placeholder='e.g. "Said they were getting 3 quotes" or "Asked about financing"'
+                    value={estimateForm.customerSaid}
+                    onChange={e => setEstimateForm(p => ({ ...p, customerSaid: e.target.value }))}
+                    className={inputClass} />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-gray-700 mb-1 block">Any specific concerns mentioned? <span className="text-gray-400 font-normal">(optional)</span></label>
+                  <input type="text"
+                    placeholder='e.g. "Worried about the price" or "Timing was an issue"'
+                    value={estimateForm.concerns}
+                    onChange={e => setEstimateForm(p => ({ ...p, concerns: e.target.value }))}
+                    className={inputClass} />
+                </div>
               </div>
+
+              {/* Extra context toggle */}
+              <button type="button"
+                onClick={() => setShowEstimateContext(p => !p)}
+                className="text-xs text-gray-500 hover:text-gray-800 flex items-center gap-1 transition-all">
+                {showEstimateContext ? "▲ Hide" : "▼ Add more context"}
+              </button>
+              {showEstimateContext && (
+                <div>
+                  <label className="text-xs font-medium text-gray-700 mb-1 block">Anything else the AI should know?</label>
+                  <textarea
+                    rows={3}
+                    placeholder="Paste in what the customer emailed or texted, or add any other details that might help personalize the message..."
+                    value={estimateForm.extraContext}
+                    onChange={e => setEstimateForm(p => ({ ...p, extraContext: e.target.value }))}
+                    className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-gray-400 bg-white resize-none"
+                  />
+                </div>
+              )}
             </div>
           )}
 
           {activeTab === "winback" && (
             <div className="space-y-4">
+              {/* Basic fields */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-xs font-medium text-gray-700 mb-1 block">Customer Name</label>
@@ -216,7 +265,7 @@ export default function FollowUpTool() {
               </div>
               <div>
                 <label className="text-xs font-medium text-gray-700 mb-2 block">Tone</label>
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
                   {["friendly", "professional", "casual"].map(t => (
                     <button type="button" key={t}
                       onClick={() => setWinbackForm(p => ({ ...p, tone: t }))}
@@ -226,6 +275,58 @@ export default function FollowUpTool() {
                   ))}
                 </div>
               </div>
+
+              {/* Structured context fields */}
+              <div className="border-t border-gray-100 pt-4 space-y-3">
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Customer Context <span className="font-normal normal-case text-gray-400">— the more you add, the better the message</span></p>
+                <div>
+                  <label className="text-xs font-medium text-gray-700 mb-1 block">How did the last job go?</label>
+                  <select value={winbackForm.jobWentHow}
+                    onChange={e => setWinbackForm(p => ({ ...p, jobWentHow: e.target.value }))}
+                    className={selectClass}>
+                    <option value="">Select (optional)</option>
+                    <option value="great">Great — they were very happy</option>
+                    <option value="good">Good — no issues, smooth job</option>
+                    <option value="minorissue">Had a minor issue we resolved</option>
+                    <option value="complicated">It was complicated</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-gray-700 mb-1 block">Anything memorable about this customer? <span className="text-gray-400 font-normal">(optional)</span></label>
+                  <input type="text"
+                    placeholder='e.g. "Mentioned wanting to redo the bathroom" or "Always very friendly"'
+                    value={winbackForm.memorableDetails}
+                    onChange={e => setWinbackForm(p => ({ ...p, memorableDetails: e.target.value }))}
+                    className={inputClass} />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-gray-700 mb-1 block">Why might they need you again? <span className="text-gray-400 font-normal">(optional)</span></label>
+                  <input type="text"
+                    placeholder='e.g. "Seasonal service due" or "They mentioned a second job"'
+                    value={winbackForm.whyNeedYou}
+                    onChange={e => setWinbackForm(p => ({ ...p, whyNeedYou: e.target.value }))}
+                    className={inputClass} />
+                </div>
+              </div>
+
+              {/* Extra context toggle */}
+              <button type="button"
+                onClick={() => setShowWinbackContext(p => !p)}
+                className="text-xs text-gray-500 hover:text-gray-800 flex items-center gap-1 transition-all">
+                {showWinbackContext ? "▲ Hide" : "▼ Add more context"}
+              </button>
+              {showWinbackContext && (
+                <div>
+                  <label className="text-xs font-medium text-gray-700 mb-1 block">Anything else the AI should know?</label>
+                  <textarea
+                    rows={3}
+                    placeholder="Paste in any emails or texts from this customer, or add any other details that might help personalize the message..."
+                    value={winbackForm.extraContext}
+                    onChange={e => setWinbackForm(p => ({ ...p, extraContext: e.target.value }))}
+                    className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-gray-400 bg-white resize-none"
+                  />
+                </div>
+              )}
             </div>
           )}
 
@@ -235,12 +336,8 @@ export default function FollowUpTool() {
             </div>
           )}
 
-          <button
-            type="button"
-            onClick={handleGenerate}
-            disabled={loading || !canGenerate}
-            className="mt-6 w-full bg-black text-white py-3 rounded-xl text-sm font-medium hover:bg-gray-800 disabled:opacity-40 transition-all"
-          >
+          <button type="button" onClick={handleGenerate} disabled={loading || !canGenerate}
+            className="mt-6 w-full bg-black text-white py-3 rounded-xl text-sm font-medium hover:bg-gray-800 disabled:opacity-40 transition-all">
             {loading ? "Generating messages..." : "Generate Messages"}
           </button>
         </div>
