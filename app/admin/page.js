@@ -14,9 +14,12 @@ export default async function AdminPage() {
     SELECT * FROM businesses ORDER BY created_at DESC
   `;
 
+  const waitlistEntries = await sql`
+    SELECT * FROM waitlist ORDER BY created_at DESC
+  `;
+
   const totalActive = businesses.filter(b => b.subscription_status === "active" && b.stripe_subscription_id).length;
   const totalTrialing = businesses.filter(b => b.subscription_status === "trial").length;
-  const totalInactive = businesses.filter(b => b.subscription_status === "inactive").length;
   const totalRevenue = totalActive * 35;
 
   const now = new Date();
@@ -50,7 +53,7 @@ export default async function AdminPage() {
             <p className="text-3xl font-bold text-gray-900">${totalRevenue}</p>
           </div>
         </div>
-        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden mb-8">
           <table className="w-full">
             <thead className="border-b border-gray-100">
               <tr>
@@ -107,6 +110,35 @@ export default async function AdminPage() {
               {businesses.length === 0 && (
                 <tr>
                   <td colSpan={6} className="px-6 py-12 text-center text-gray-400 text-sm">No customers yet.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+            <h2 className="font-semibold text-gray-900">Waitlist ({waitlistEntries.length})</h2>
+          </div>
+          <table className="w-full">
+            <thead className="border-b border-gray-100">
+              <tr>
+                <th className="text-left px-6 py-4 text-xs text-gray-500 font-medium">Email</th>
+                <th className="text-left px-6 py-4 text-xs text-gray-500 font-medium">Business</th>
+                <th className="text-left px-6 py-4 text-xs text-gray-500 font-medium">Joined</th>
+              </tr>
+            </thead>
+            <tbody>
+              {waitlistEntries.map(entry => (
+                <tr key={entry.id} className="border-b border-gray-50 hover:bg-gray-50">
+                  <td className="px-6 py-4 text-sm text-gray-900">{entry.email}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{entry.business_name || "—"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{new Date(entry.created_at).toLocaleDateString()}</td>
+                </tr>
+              ))}
+              {waitlistEntries.length === 0 && (
+                <tr>
+                  <td colSpan={3} className="px-6 py-12 text-center text-gray-400 text-sm">No waitlist signups yet.</td>
                 </tr>
               )}
             </tbody>
