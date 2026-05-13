@@ -157,7 +157,7 @@ export default async function Home() {
                   <li className="flex items-start gap-2"><span className="text-green-500 font-bold">✓</span> Email, text & voicemail scripts</li>
                   <li className="flex items-start gap-2"><span className="text-green-500 font-bold">✓</span> 14-day free trial</li>
                 </ul>
-                <div className="block w-full bg-gray-100 text-gray-400 py-2.5 rounded-full text-sm font-medium text-center cursor-not-allowed">🚀 Available July 5th</div>
+                <Link href="/sign-up" className="block w-full bg-black text-white py-2.5 rounded-full text-sm font-medium hover:bg-gray-800 text-center">Start free trial</Link>
               </div>
 
               {/* Plan 2 */}
@@ -171,7 +171,7 @@ export default async function Home() {
                   <li className="flex items-start gap-2"><span className="text-green-500 font-bold">✓</span> Hourly monitoring & alerts</li>
                   <li className="flex items-start gap-2"><span className="text-green-500 font-bold">✓</span> 14-day free trial</li>
                 </ul>
-                <Link href="/sign-up" className="block w-full bg-black text-white py-2.5 rounded-full text-sm font-medium hover:bg-gray-800 text-center">Start free trial</Link>
+                <div className="block w-full bg-gray-100 text-gray-400 py-2.5 rounded-full text-sm font-medium text-center cursor-not-allowed">🚀 Available July 5th</div>
               </div>
 
               {/* Plan 3 - Best value */}
