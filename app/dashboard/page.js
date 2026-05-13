@@ -233,6 +233,7 @@ export default function Dashboard() {
           <a href="/settings" className="hidden md:block text-sm text-gray-500 hover:text-gray-900">Settings</a>
           <a href="/tools/followup" className="hidden md:block text-sm text-gray-500 hover:text-gray-900">Second Knock</a>
           <a href="/blog" className="hidden md:block text-sm text-gray-500 hover:text-gray-900">Blog</a>
+          <a href="/help" className="hidden md:block text-sm text-gray-500 hover:text-gray-900">Help</a>
         </div>
         <div className="flex items-center gap-2 md:gap-4">
           {isTrialing && (

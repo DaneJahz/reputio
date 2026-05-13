@@ -15,7 +15,7 @@ export default async function Home() {
         <span className="text-xl font-bold text-gray-900">OwnerReply</span>
         <div className="flex gap-3 items-center">
           <Link href="/blog" className="text-sm text-gray-600 hover:text-gray-900 hidden md:block">Blog</Link>
-          <Link href="/sign-in" className="text-sm text-gray-600 hover:text-gray-900">Log in</Link>
+          <Link href="/help" className="text-sm text-gray-600 hover:text-gray-900 hidden md:block">Help</Link>
           <Link href="/sign-up" className="text-sm bg-black text-white px-4 py-2 rounded-full hover:bg-gray-800 whitespace-nowrap">Start free trial</Link>
         </div>
       </nav>
