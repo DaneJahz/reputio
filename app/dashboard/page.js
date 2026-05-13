@@ -695,13 +695,15 @@ export default function Dashboard() {
           disabled={subscribing}
           className="w-full text-left px-4 py-4 rounded-xl border-2 border-gray-200 hover:border-black transition-all"
         >
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-semibold text-gray-900">⭐ Google Review Replies</p>
-              <p className="text-xs text-gray-500 mt-0.5">AI responses posted to Google with one click</p>
-            </div>
-            <p className="font-bold text-gray-900">$35/mo</p>
+          <div className="w-full text-left px-4 py-4 rounded-xl border-2 border-gray-100 bg-gray-50 cursor-not-allowed">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="font-semibold text-gray-400">⭐ Google Review Replies</p>
+            <p className="text-xs text-gray-400 mt-0.5">AI responses posted to Google with one click</p>
           </div>
+          <p className="font-bold text-gray-400">🚀 July 5th</p>
+        </div>
+      </div>
         </button>
         <button
           onClick={() => { setShowPlanPicker(false); handleSubscribe("both"); }}
@@ -709,13 +711,16 @@ export default function Dashboard() {
           className="w-full text-left px-4 py-4 rounded-xl border-2 border-green-400 hover:border-green-600 transition-all relative"
         >
           <span className="absolute -top-2.5 left-4 bg-green-500 text-white text-xs font-semibold px-2 py-0.5 rounded-full">Best value</span>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-semibold text-gray-900">✨ Both Tools</p>
-              <p className="text-xs text-gray-500 mt-0.5">Full access to everything — save $15/mo</p>
-            </div>
-            <p className="font-bold text-gray-900">$49/mo</p>
-          </div>
+          <div className="w-full text-left px-4 py-4 rounded-xl border-2 border-gray-100 bg-gray-50 cursor-not-allowed relative">
+  <span className="absolute -top-2.5 left-4 bg-gray-300 text-white text-xs font-semibold px-2 py-0.5 rounded-full">Available July 5th</span>
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="font-semibold text-gray-400">✨ Both Tools</p>
+          <p className="text-xs text-gray-400 mt-0.5">Full access to everything — save $15/mo</p>
+        </div>
+        <p className="font-bold text-gray-400">$49/mo</p>
+      </div>
+    </div>
         </button>
       </div>
       <button
