@@ -678,7 +678,7 @@ export default function Dashboard() {
       <p className="text-sm text-gray-500 mb-6">All plans include a 14-day free trial. Cancel anytime.</p>
       <div className="space-y-3 mb-6">
         <button
-          onClick={() => { setShowPlanPicker(false); handleSubscribe("followup"); }}
+          onClick={() => { window.gtag?.('event', 'click_subscribe', { plan: 'second_knock', value: 29 }); setShowPlanPicker(false); handleSubscribe("followup"); }}
           disabled={subscribing}
           className="w-full text-left px-4 py-4 rounded-xl border-2 border-gray-200 hover:border-black transition-all"
         >
