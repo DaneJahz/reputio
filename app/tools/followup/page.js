@@ -13,6 +13,28 @@ export default function FollowUpTool() {
   const [error, setError] = useState(null);
   const [showEstimateContext, setShowEstimateContext] = useState(false);
   const [showWinbackContext, setShowWinbackContext] = useState(false);
+  const [history, setHistory] = useState([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [expandedHistory, setExpandedHistory] = useState(null);
+  const [historyCopied, setHistoryCopied] = useState({});
+
+async function fetchHistory() {
+  setHistoryLoading(true);
+  try {
+    const res = await fetch("/api/followup-history");
+    const data = await res.json();
+    if (data.history) setHistory(data.history);
+  } catch (err) {
+    console.error("History fetch error:", err);
+  }
+  setHistoryLoading(false);
+}
+
+function historyCopy(text, key) {
+  navigator.clipboard.writeText(text);
+  setHistoryCopied(p => ({ ...p, [key]: true }));
+  setTimeout(() => setHistoryCopied(p => ({ ...p, [key]: false })), 2000);
+}
 
   const [estimateForm, setEstimateForm] = useState({
     customerName: "", jobType: "HVAC", estimateAmount: "",
@@ -115,6 +137,11 @@ export default function FollowUpTool() {
             onClick={() => { setActiveTab("winback"); setMessages(null); setError(null); }}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === "winback" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}>
             Customer Win-Back
+          </button>
+          <button type="button"
+            onClick={() => { setActiveTab("history"); setMessages(null); setError(null); fetchHistory(); }}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === "history" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}>
+            History
           </button>
         </div>
 
@@ -330,16 +357,125 @@ export default function FollowUpTool() {
             </div>
           )}
 
+          {activeTab === "history" && (
+  <div>
+    {historyLoading && (
+      <div className="text-center py-12 text-gray-400 text-sm">Loading history...</div>
+    )}
+    {!historyLoading && history.length === 0 && (
+      <div className="text-center py-12">
+        <p className="text-gray-400 text-sm">No messages generated yet.</p>
+        <p className="text-gray-400 text-xs mt-1">Your generated messages will appear here.</p>
+      </div>
+    )}
+    {!historyLoading && history.length > 0 && (
+      <div className="space-y-3">
+        {history.map((item) => (
+          <div key={item.id} className="border border-gray-100 rounded-xl overflow-hidden">
+            <button
+              type="button"
+              onClick={() => setExpandedHistory(expandedHistory === item.id ? null : item.id)}
+              className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-all text-left"
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-lg">{item.type === "estimate" ? "📋" : "🔁"}</span>
+                <div>
+                  <p className="text-sm font-semibold text-gray-900">{item.customer_name}</p>
+                  <p className="text-xs text-gray-400">
+                    {item.job_type}
+                    {item.estimate_amount ? ` · $${item.estimate_amount}` : ""}
+                    {" · "}
+                    {item.type === "estimate" ? "Estimate Follow-Up" : "Win-Back"}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-gray-400">
+                  {new Date(item.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                </span>
+                <span className="text-gray-400 text-xs">{expandedHistory === item.id ? "▲" : "▼"}</span>
+              </div>
+            </button>
+
+            {expandedHistory === item.id && (
+              <div className="border-t border-gray-100 p-4 space-y-3 bg-gray-50">
+                {/* Email */}
+                <div className="bg-white rounded-xl p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <span>📧</span>
+                      <p className="text-xs font-semibold text-gray-700">Email</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => historyCopy(`Subject: ${item.email_subject}\n\n${item.email_body}`, `email-${item.id}`)}
+                      className="text-xs border border-gray-200 px-3 py-1 rounded-full hover:bg-gray-50 text-gray-500"
+                    >
+                      {historyCopied[`email-${item.id}`] ? "Copied ✓" : "Copy"}
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-400 mb-1">Subject</p>
+                  <p className="text-sm text-gray-900 font-medium mb-2">{item.email_subject}</p>
+                  <p className="text-xs text-gray-400 mb-1">Body</p>
+                  <p className="text-sm text-gray-600 whitespace-pre-wrap">{item.email_body}</p>
+                </div>
+
+                {/* Text */}
+                <div className="bg-white rounded-xl p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <span>💬</span>
+                      <p className="text-xs font-semibold text-gray-700">Text Message</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => historyCopy(item.text_message, `text-${item.id}`)}
+                      className="text-xs border border-gray-200 px-3 py-1 rounded-full hover:bg-gray-50 text-gray-500"
+                    >
+                      {historyCopied[`text-${item.id}`] ? "Copied ✓" : "Copy"}
+                    </button>
+                  </div>
+                  <p className="text-sm text-gray-600">{item.text_message}</p>
+                </div>
+
+                {/* Voicemail */}
+                <div className="bg-white rounded-xl p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <span>📞</span>
+                      <p className="text-xs font-semibold text-gray-700">Voicemail Script</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => historyCopy(item.voicemail, `voicemail-${item.id}`)}
+                      className="text-xs border border-gray-200 px-3 py-1 rounded-full hover:bg-gray-50 text-gray-500"
+                    >
+                      {historyCopied[`voicemail-${item.id}`] ? "Copied ✓" : "Copy"}
+                    </button>
+                  </div>
+                  <p className="text-sm text-gray-600">{item.voicemail}</p>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+)}
+
           {error && (
             <div className="mt-4 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
               <p className="text-sm text-red-700">{error}</p>
             </div>
           )}
 
-          <button type="button" onClick={handleGenerate} disabled={loading || !canGenerate}
-            className="mt-6 w-full bg-black text-white py-3 rounded-xl text-sm font-medium hover:bg-gray-800 disabled:opacity-40 transition-all">
-            {loading ? "Generating messages..." : "Generate Messages"}
-          </button>
+          {activeTab !== "history" && (
+            <button type="button" onClick={handleGenerate} disabled={loading || !canGenerate}
+              className="mt-6 w-full bg-black text-white py-3 rounded-xl text-sm font-medium hover:bg-gray-800 disabled:opacity-40 transition-all">
+              {loading ? "Generating messages..." : "Generate Messages"}
+            </button>
+          )}
         </div>
 
         {messages && (

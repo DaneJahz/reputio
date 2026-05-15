@@ -45,7 +45,27 @@ export async function POST(request) {
     }
 
     const messages = await generateFollowUpMessages(type, data);
-    return Response.json({ messages });
+
+// Save to history
+try {
+  await sql`
+    INSERT INTO followup_history (
+      clerk_user_id, type, customer_name, job_type,
+      estimate_amount, days_since, tone,
+      email_subject, email_body, text_message, voicemail
+    ) VALUES (
+      ${userId}, ${type}, ${data.customerName || data.customerName}, 
+      ${data.jobType || data.lastJobType},
+      ${data.estimateAmount || null}, ${data.daysSince || null}, ${data.tone},
+      ${messages.email?.subject || null}, ${messages.email?.body || null},
+      ${messages.text || null}, ${messages.voicemail || null}
+    )
+  `;
+} catch (err) {
+  console.error("History save error (non-fatal):", err);
+}
+
+return Response.json({ messages });
   } catch (error) {
     console.error("Error generating follow-up:", error);
     return Response.json({ error: error.message }, { status: 500 });
